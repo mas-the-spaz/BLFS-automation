@@ -3,6 +3,9 @@ from bs4 import BeautifulSoup as bs4
 import json
 import re
 
+
+scheme = {}
+
 '''
 JSON scheme
 {
@@ -20,24 +23,23 @@ JSON scheme
 '''
 
 
-scheme = {}
-
-with open('Wishlist.txt', 'r+') as u:
-    for i in u.readlines():
+def getInfo(i):
         res = requests.get(i.rstrip(), verify=False)
         soup = bs4(res.text, 'html.parser')
         name = soup.find("h1", class_='sect1').find('a').get('id')  # string of name
         version = soup.find("h1", class_='sect1').text.strip()  # string of version
         deps = {'recommended': [], 'required': [], 'optional': []}
-        # if hashtag in url... ignore
         # if div class=sect2... in content,
         # for each sect2 div, set all the vars etc. 
-        # 
 
         def depDict(type):
             for i in soup.find_all('p', class_=type):
-                for j in i.find_all('a', title=True):
+                for j in i.find_all('a', title=True, class_='ulink'):
+                    print(j)
+                    deps[type].append(j['href'])
+                for j in i.find_all('a', title=True, class_='xref'):
                     deps[type].append(j['title'])
+                
                     # if url of dep not contain blfs url - ignore it?
 
         for i in ['required', ' recommended', 'optional']:
@@ -49,7 +51,7 @@ with open('Wishlist.txt', 'r+') as u:
 
         urls = []
         for i in soup.find('div', class_='itemizedlist').find_all('a', class_='ulink'):
-            # if url starts with ftp...
+            # if url starts with ftp... --- for dl script
             # check if returns something
             urls.append(i['href'])
 
@@ -61,5 +63,16 @@ with open('Wishlist.txt', 'r+') as u:
 
         scheme[name] = {'Version': version, 'url': urls, 'Dependencies': deps, 'Commands': commands}
 
+
+
+with open('Wishlist.txt', 'r+') as u:  # eventually this will download the orignal urls
+    for i in u.readlines():
+        if not '#' in i:  # remove all modules urls 
+            getInfo(i)
+
+
+
 with open('dependencies.json', 'w+') as j:
     json.dump(scheme, j)
+
+

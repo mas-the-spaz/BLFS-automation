@@ -1,13 +1,1 @@
-https://www.linuxfromscratch.org/blfs/view/stable/general/aalib.html
-https://www.linuxfromscratch.org/blfs/view/stable/xsoft/AbiWord.html
-https://www.linuxfromscratch.org/blfs/view/stable/general/accountsservice.html
-https://www.linuxfromscratch.org/blfs/view/stable/general/acpid.html
-https://www.linuxfromscratch.org/blfs/view/stable/x/adwaita-icon-theme.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/alsa-firmware.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/alsa-lib.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/alsa-oss.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/alsa-plugins.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/alsa-tools.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/alsa-utils.html
-https://www.linuxfromscratch.org/blfs/view/stable/x/amtk.html
-https://www.linuxfromscratch.org/blfs/view/stable/server/apache.html
+https://www.linuxfromscratch.org/blfs/view/stable/general/llvm.html
