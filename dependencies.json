@@ -1,1 +1,27 @@
-{"llvm": {"Version": "LLVM-11.1.0", "url": ["https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-11.1.0.src.tar.xz"], "Dependencies": {"recommended": [], "required": ["CMake-3.19.5"], "optional": ["Doxygen-1.9.1", "Git-2.30.1", "Graphviz-2.44.1", "libxml2-2.9.10", "Pygments-2.8.0", "rsync-3.2.3", "texlive-20200406-source", "install-tl-unx", "Valgrind-3.16.1", "PyYAML-5.3.1", "Zip-3.0"]}, "Commands": ["tar -xf ../clang-11.1.0.src.tar.xz -C tools && mv tools/clang-11.1.0.src tools/clang", "tar -xf ../compiler-rt-11.1.0.src.tar.xz -C projects && mv projects/compiler-rt-11.1.0.src projects/compiler-rt", "grep -rl '#!.*python' | xargs sed -i '1s/python$/python3/'", "mkdir -v build && cd       build &&  CC=gcc CXX=g++ cmake -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_ENABLE_FFI=ON -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=ON -DLLVM_ENABLE_RTTI=ON -DLLVM_TARGETS_TO_BUILD=\"host;AMDGPU;BPF\" -DLLVM_BUILD_TESTS=ON -DLLVM_BINUTILS_INCDIR=/usr/include -Wno-dev -G Ninja ..                      && ninja", "cmake -DLLVM_BUILD_DOCS=ON -DLLVM_ENABLE_SPHINX=ON -DSPHINX_WARNINGS_AS_ERRORS=OFF -Wno-dev -G Ninja ..            && ninja docs-llvm-html  docs-llvm-man", "ninja docs-clang-html docs-clang-man", "ninja install", "install -v -m644 docs/man/* /usr/share/man/man1             && install -v -d -m755 /usr/share/doc/llvm-11.1.0/llvm-html     && cp -Rv docs/html/* /usr/share/doc/llvm-11.1.0/llvm-html", "install -v -m644 tools/clang/docs/man/* /usr/share/man/man1 && install -v -d -m755 /usr/share/doc/llvm-11.1.0/clang-html    && cp -Rv tools/clang/docs/html/* /usr/share/doc/llvm-11.1.0/clang-html"]}}
+{
+    "OCaml": {
+        "url": "https://ocaml.org/"
+    },
+    "psutil": {
+        "url": "https://pypi.org/project/psutil/"
+    },
+    "recommonmark": {
+        "url": "https://pypi.python.org/pypi/recommonmark"
+    },
+    "Sphinx": {
+        "url": "https://pypi.python.org/pypi/Sphinx"
+    },
+    "Z3": {
+        "url": "https://github.com/Z3Prover/z3"
+    },
+    "llvm": {
+        "Version": "LLVM-11.1.0",
+        "url": ["https://github.com/llvm/llvm-project/releases/download/llvmorg-11.1.0/llvm-11.1.0.src.tar.xz"],
+        "Dependencies": {
+            "recommended": [],
+            "required": ["CMake-3.19.5"],
+            "optional": ["Doxygen-1.9.1", "Git-2.30.1", "Graphviz-2.44.1", "libxml2-2.9.10", "Pygments-2.8.0", "rsync-3.2.3", "texlive-20200406-source", "install-tl-unx", "Valgrind-3.16.1", "PyYAML-5.3.1", "Zip-3.0", "OCaml", "psutil", "recommonmark", "Sphinx", "Z3"]
+        },
+        "Commands": ["tar -xf ../clang-11.1.0.src.tar.xz -C tools && mv tools/clang-11.1.0.src tools/clang", "tar -xf ../compiler-rt-11.1.0.src.tar.xz -C projects && mv projects/compiler-rt-11.1.0.src projects/compiler-rt", "grep -rl '#!.*python' | xargs sed -i '1s/python$/python3/'", "mkdir -v build && cd       build &&  CC=gcc CXX=g++ cmake -DCMAKE_INSTALL_PREFIX=/usr -DLLVM_ENABLE_FFI=ON -DCMAKE_BUILD_TYPE=Release -DLLVM_BUILD_LLVM_DYLIB=ON -DLLVM_LINK_LLVM_DYLIB=ON -DLLVM_ENABLE_RTTI=ON -DLLVM_TARGETS_TO_BUILD=\"host;AMDGPU;BPF\" -DLLVM_BUILD_TESTS=ON -DLLVM_BINUTILS_INCDIR=/usr/include -Wno-dev -G Ninja ..                      && ninja", "cmake -DLLVM_BUILD_DOCS=ON -DLLVM_ENABLE_SPHINX=ON -DSPHINX_WARNINGS_AS_ERRORS=OFF -Wno-dev -G Ninja ..            && ninja docs-llvm-html  docs-llvm-man", "ninja docs-clang-html docs-clang-man", "ninja install", "install -v -m644 docs/man/* /usr/share/man/man1             && install -v -d -m755 /usr/share/doc/llvm-11.1.0/llvm-html     && cp -Rv docs/html/* /usr/share/doc/llvm-11.1.0/llvm-html", "install -v -m644 tools/clang/docs/man/* /usr/share/man/man1 && install -v -d -m755 /usr/share/doc/llvm-11.1.0/clang-html    && cp -Rv tools/clang/docs/html/* /usr/share/doc/llvm-11.1.0/clang-html"]
+    }
+}

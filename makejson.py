@@ -34,13 +34,13 @@ def getInfo(i):
 
         def depDict(type):
             for i in soup.find_all('p', class_=type):
-                for j in i.find_all('a', title=True, class_='ulink'):
-                    print(j)
-                    deps[type].append(j['href'])
-                for j in i.find_all('a', title=True, class_='xref'):
-                    deps[type].append(j['title'])
+                for j in i.find_all('a', title=True, class_='xref'): # grab blfs deps
+                   deps[type].append(j['title'])
+
+                for j in i.find_all('a', class_='ulink'): # greb external deps
+                    deps[type].append(j.text)
+                    scheme[j.text] = {'url': j['href']}
                 
-                    # if url of dep not contain blfs url - ignore it?
 
         for i in ['required', ' recommended', 'optional']:
             depDict(i)
