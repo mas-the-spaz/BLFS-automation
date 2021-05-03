@@ -29,6 +29,10 @@ with open('Wishlist.txt', 'r+') as u:
         name = soup.find("h1", class_='sect1').find('a').get('id')  # string of name
         version = soup.find("h1", class_='sect1').text.strip()  # string of version
         deps = {'recommended': [], 'required': [], 'optional': []}
+        # if hashtag in url... ignore
+        # if div class=sect2... in content,
+        # for each sect2 div, set all the vars etc. 
+        # 
 
         def depDict(type):
             for i in soup.find_all('p', class_=type):
