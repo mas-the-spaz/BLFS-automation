@@ -1,1 +1,2 @@
-https://www.linuxfromscratch.org/blfs/view/stable/general/llvm.html
+https://www.linuxfromscratch.org/blfs/view/stable/general/perl-modules.html
+https://www.linuxfromscratch.org/blfs/view/stable/multimedia/pavucontrol.html
