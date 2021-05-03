@@ -38,6 +38,7 @@ with open('Wishlist.txt', 'r+') as u:
             for i in soup.find_all('p', class_=type):
                 for j in i.find_all('a', title=True):
                     deps[type].append(j['title'])
+                    # if url of dep not contain blfs url - ignore it?
 
         for i in ['required', ' recommended', 'optional']:
             depDict(i)
