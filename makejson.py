@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup as bs4
 import json
 import re
 
+baseUrl = 'https://github.com/mas-the-spaz/python-blfs.git'
 
 scheme = {}
 
@@ -21,6 +22,7 @@ JSON scheme
         }
 }
 '''
+# create a class for handling web components?
 
 def moduleCollect(soup):
     # if div sect2 than call this
