@@ -55,30 +55,33 @@ def moduleCollect(soup):
         print(commands)
         scheme[name] = {'Version': name, 'url': urls, 'Dependencies': deps, 'Commands': commands}
 
-def packageCollect(soup):
-    name = soup.find("h1", class_='sect1').find('a').get('id')  # string of name
-    version = soup.find("h1", class_='sect1').text.strip()  # string of version
+def packageCollect(package, tagClass, tag):
+    version = package.find(tag, class_=tagClass).text.strip()  # string of version
+    if package.find(tag, class_=tagClass).find('a').get('id'):
+        name = package.find(tag, class_=tagClass).find('a').get('id')  # string of name
+    else:
+        name = version
+
     deps = {'recommended': [], 'required': [], 'optional': []}
 
     def depDict(type):
-        for i in soup.find_all('p', class_=type):
+        for i in package.find_all('p', class_=type):
             for j in i.find_all('a', title=True, class_='xref'): # grab blfs deps
                 deps[type].append(j['title'])
 
             for j in i.find_all('a', class_='ulink'): # greb external deps
                 deps[type].append(j.text)
-                scheme[j.text] = {'url': j['href']}
-            
-# get md5 ?
+                scheme[j.text] = {'url': j['href']}  # get md5 ?
+
     for i in ['required', 'recommended', 'optional']:
         depDict(i)
 
     commands = []
-    for i in soup.find_all('kbd', class_='command'):  # remove whitespace
+    for i in package.find_all('kbd', class_='command'):  # remove whitespace
         commands.append(re.sub('\s+\\\\\s+', ' ', i.text).replace('\n', ' '))
 
     urls = []
-    for i in soup.find('div', class_='itemizedlist').find_all('a', class_='ulink'):
+    for i in package.find('div', class_='itemizedlist').find_all('a', class_='ulink'):
         # if url starts with ftp... --- for dl script
         # check if returns something
         urls.append(i['href'])
@@ -100,9 +103,11 @@ with open('Wishlist.txt', 'r+') as u:  # eventually this will download the orign
             soup = bs4(res.text, 'html.parser') # get webpage contents
 
             if soup.find_all('div', class_='sect2'):
-                moduleCollect(soup)
+                for module in soup.find_all('div', class_='sect2'):
+                    packageCollect(module, "sect2", "h2")
+                    # check if contains "packge information"
             else:
-                packageCollect(soup)
+                packageCollect(soup, "sect1", "h1")
 # consolidate into one function
 
 with open('dependencies.json', 'w+') as j:

@@ -1,1 +1,1 @@
-{}
+{"pavucontrol": {"Version": "pavucontrol-4.0", "url": ["http://freedesktop.org/software/pulseaudio/pavucontrol/pavucontrol-4.0.tar.xz"], "Dependencies": {"recommended": [], "required": ["Gtkmm-3.24.3", "libcanberra-0.30", "libsigc++-2.10.6", "PulseAudio-14.2"], "optional": []}, "Commands": ["./configure --prefix=/usr --docdir=/usr/share/doc/pavucontrol-4.0 && make", "make install"]}}
