@@ -1,1 +1,782 @@
-{"pavucontrol": {"Version": "pavucontrol-4.0", "url": ["http://freedesktop.org/software/pulseaudio/pavucontrol/pavucontrol-4.0.tar.xz"], "Dependencies": {"recommended": [], "required": ["Gtkmm-3.24.3", "libcanberra-0.30", "libsigc++-2.10.6", "PulseAudio-14.2"], "optional": []}, "Commands": ["./configure --prefix=/usr --docdir=/usr/share/doc/pavucontrol-4.0 && make", "make install"]}}
+{
+  "perl-archive-zip": {
+    "Version": "Archive::Zip-1.68",
+    "url": [
+      "https://www.cpan.org/authors/id/P/PH/PHRED/Archive-Zip-1.68.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "UnZip-6.0"
+      ],
+      "recommended": [],
+      "optional": [
+        "Test::MockModule-v0.173.0"
+      ]
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-autovivification": {
+    "Version": "autovivification-0.18",
+    "url": [
+      "https://www.cpan.org/authors/id/V/VP/VPIT/autovivification-0.18.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-business-isbn": {
+    "Version": "Business::ISBN-3.006",
+    "url": [
+      "https://www.cpan.org/authors/id/B/BD/BDFOY/Business-ISBN-3.006.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Business::ISBN::Data-20210112.001"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-business-ismn": {
+    "Version": "Business::ISMN-1.202",
+    "url": [
+      "https://www.cpan.org/authors/id/B/BD/BDFOY/Business-ISMN-1.202.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Tie::Cycle-1.226"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-business-issn": {
+    "Version": "Business::ISSN-1.004",
+    "url": [
+      "https://www.cpan.org/authors/id/B/BD/BDFOY/Business-ISSN-1.004.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-class-accessor": {
+    "Version": "Class::Accessor-0.51",
+    "url": [
+      "https://www.cpan.org/authors/id/K/KA/KASEI/Class-Accessor-0.51.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-data-compare": {
+    "Version": "Data::Compare-1.27",
+    "url": [
+      "https://www.cpan.org/authors/id/D/DC/DCANTRELL/Data-Compare-1.27.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Clone-0.45",
+        "File::Find::Rule-0.34"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-data-dump": {
+    "Version": "Data::Dump-1.23",
+    "url": [
+      "https://www.cpan.org/authors/id/G/GA/GAAS/Data-Dump-1.23.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-data-uniqid": {
+    "Version": "Data::Uniqid-0.12",
+    "url": [
+      "https://www.cpan.org/authors/id/M/MW/MWX/Data-Uniqid-0.12.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-datetime-calendar-julian": {
+    "Version": "DateTime::Calendar::Julian-0.103",
+    "url": [
+      "https://www.cpan.org/authors/id/W/WY/WYANT/DateTime-Calendar-Julian-0.103.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "DateTime-1.54"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-datetime-format-builder": {
+    "Version": "DateTime::Format::Builder-0.83",
+    "url": [
+      "https://www.cpan.org/authors/id/D/DR/DROLSKY/DateTime-Format-Builder-0.83.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "DateTime::Format::Strptime-1.78",
+        "Params::Validate-1.30"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-encode-eucjpascii": {
+    "Version": "Encode::EUCJPASCII-0.03",
+    "url": [
+      "https://www.cpan.org/authors/id/N/NE/NEZUMI/Encode-EUCJPASCII-0.03.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-encode-hanextra": {
+    "Version": "Encode::HanExtra-0.23",
+    "url": [
+      "https://www.cpan.org/authors/id/A/AU/AUDREYT/Encode-HanExtra-0.23.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "PERL_USE_UNSAFE_INC=1 perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-encode-jis2k": {
+    "Version": "Encode::JIS2K-0.03",
+    "url": [
+      "https://www.cpan.org/authors/id/D/DA/DANKOGAI/Encode-JIS2K-0.03.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-file-slurper": {
+    "Version": "File::Slurper-0.012",
+    "url": [
+      "https://www.cpan.org/authors/id/L/LE/LEONT/File-Slurper-0.012.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [
+        "Test::Warnings-0.030"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-file-which": {
+    "Version": "File::Which-1.23",
+    "url": [
+      "https://www.cpan.org/authors/id/P/PL/PLICEASE/File-Which-1.23.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-html-parser": {
+    "Version": "HTML::Parser-3.75",
+    "url": [
+      "https://www.cpan.org/authors/id/C/CA/CAPOEIRAB/HTML-Parser-3.75.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "HTML::Tagset-3.20",
+        "HTTP::Message-6.27"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-http-daemon": {
+    "Version": "HTTP::Daemon-6.12",
+    "url": [
+      "https://www.cpan.org/authors/id/O/OA/OALDERS/HTTP-Daemon-6.12.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "HTTP::Message-6.27"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-io-socket-ssl": {
+    "Version": "IO::Socket::SSL-2.069",
+    "url": [
+      "https://www.cpan.org/authors/id/S/SU/SULLR/IO-Socket-SSL-2.069.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "make-ca-1.7",
+        "Net::SSLeay-1.88"
+      ],
+      "recommended": [
+        "URI-5.07"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "yes | perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-io-string": {
+    "Version": "IO::String-1.08",
+    "url": [
+      "https://www.cpan.org/authors/id/G/GA/GAAS/IO-String-1.08.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-ipc-run3": {
+    "Version": "IPC::Run3-0.048",
+    "url": [
+      "https://www.cpan.org/authors/id/R/RJ/RJBS/IPC-Run3-0.048.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-lingua-translit": {
+    "Version": "Lingua::Translit-0.28",
+    "url": [
+      "https://www.cpan.org/authors/id/A/AL/ALINKE/Lingua-Translit-0.28.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-list-allutils": {
+    "Version": "List::AllUtils-0.18",
+    "url": [
+      "https://www.cpan.org/authors/id/D/DR/DROLSKY/List-AllUtils-0.18.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "List::SomeUtils-0.58",
+        "List::UtilsBy-0.11"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-list-moreutils": {
+    "Version": "List::MoreUtils-0.430",
+    "url": [
+      "https://www.cpan.org/authors/id/R/RE/REHSACK/List-MoreUtils-0.430.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Exporter::Tiny-1.002002",
+        "List::MoreUtils::XS-0.430"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-log-log4perl": {
+    "Version": "Log::Log4perl-1.54",
+    "url": [
+      "https://www.cpan.org/authors/id/E/ET/ETJ/Log-Log4perl-1.54.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-lwp-protocol-https": {
+    "Version": "LWP::Protocol::https-6.10",
+    "url": [
+      "https://www.cpan.org/authors/id/O/OA/OALDERS/LWP-Protocol-https-6.10.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "IO::Socket::SSL-2.069",
+        "libwww-perl-6.52",
+        "make-ca-1.7"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "patch -Np1 -i ../LWP-Protocol-https-6.10-system_certs-2.patch",
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-module-build": {
+    "Version": "Module::Build-0.4231",
+    "url": [
+      "https://cpan.metacpan.org/authors/id/L/LE/LEONT/Module-Build-0.4231.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-net-dns": {
+    "Version": "Net::DNS-1.29",
+    "url": [
+      "https://www.cpan.org/authors/id/N/NL/NLNETLABS/Net-DNS-1.29.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-parse-recdescent": {
+    "Version": "Parse::RecDescent-1.967015",
+    "url": [
+      "https://www.cpan.org/authors/id/J/JT/JTBRAUN/Parse-RecDescent-1.967015.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-parse-yapp": {
+    "Version": "Parse::Yapp-1.21",
+    "url": [
+      "https://www.cpan.org/authors/id/W/WB/WBRASWELL/Parse-Yapp-1.21.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-perlio-utf8_strict": {
+    "Version": "PerlIO::utf8_strict-0.008",
+    "url": [
+      "https://www.cpan.org/authors/id/L/LE/LEONT/PerlIO-utf8_strict-0.008.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [
+        "Test::Exception-0.43"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-regexp-common": {
+    "Version": "Regexp::Common-2017060201",
+    "url": [
+      "https://www.cpan.org/authors/id/A/AB/ABIGAIL/Regexp-Common-2017060201.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-sgmlspm": {
+    "Version": "SGMLSpm-1.1",
+    "url": [
+      "https://www.cpan.org/authors/id/R/RA/RAAB/SGMLSpm-1.1.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "chmod -v 644 MYMETA.yml",
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install",
+      "ln -sv sgmlspl.pl /usr/bin/sgmlspl"
+    ]
+  },
+  "perl-sort-key": {
+    "Version": "Sort::Key-1.33",
+    "url": [
+      "https://www.cpan.org/authors/id/S/SA/SALVA/Sort-Key-1.33.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-test-command": {
+    "Version": "Test::Command-0.11",
+    "url": [
+      "https://www.cpan.org/authors/id/D/DA/DANBOO/Test-Command-0.11.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-test-differences": {
+    "Version": "Test::Differences-0.67",
+    "url": [
+      "https://www.cpan.org/authors/id/D/DC/DCANTRELL/Test-Differences-0.67.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Text::Diff-1.45"
+      ],
+      "recommended": [
+        "Capture::Tiny-0.48"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-text-bibtex": {
+    "Version": "Text::BibTeX-0.88",
+    "url": [
+      "https://www.cpan.org/authors/id/A/AM/AMBS/Text-BibTeX-0.88.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Config::AutoConf-0.319",
+        "ExtUtils::LibBuilder-0.08"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Build.PL &&\n./Build       &&\n./Build test",
+      "./Build install"
+    ]
+  },
+  "perl-text-csv": {
+    "Version": "Text::CSV-2.00",
+    "url": [
+      "https://www.cpan.org/authors/id/I/IS/ISHIGAKI/Text-CSV-2.00.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [
+        "Text::CSV_XS-1.44",
+        "biber-2.16"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-text-roman": {
+    "Version": "Text::Roman-3.5",
+    "url": [
+      "https://www.cpan.org/authors/id/S/SY/SYP/Text-Roman-3.5.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-unicode-collate": {
+    "Version": "Unicode::Collate-1.29",
+    "url": [
+      "https://www.cpan.org/authors/id/S/SA/SADAHIRO/Unicode-Collate-1.29.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "libthai": {
+    "url": "https://linux.thai.net/projects/libthai/"
+  },
+  "perl-unicode-linebreak": {
+    "Version": "Unicode::LineBreak-2019.001",
+    "url": [
+      "https://www.cpan.org/authors/id/N/NE/NEZUMI/Unicode-LineBreak-2019.001.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "MIME::Charset-1.012.2",
+        "Wget-1.21.1"
+      ],
+      "recommended": [
+        "libthai"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-uri": {
+    "Version": "URI-5.07",
+    "url": [
+      "https://www.cpan.org/authors/id/O/OA/OALDERS/URI-5.07.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [
+        "Test::Needs-0.002006"
+      ],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-xml-libxml-simple": {
+    "Version": "XML::LibXML::Simple-1.01",
+    "url": [
+      "https://www.cpan.org/authors/id/M/MA/MARKOV/XML-LibXML-Simple-1.01.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "XML::LibXML-2.0205"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-xml-libxslt": {
+    "Version": "XML::LibXSLT-1.99",
+    "url": [
+      "https://www.cpan.org/authors/id/S/SH/SHLOMIF/XML-LibXSLT-1.99.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [
+        "libxslt-1.1.34",
+        "XML::LibXML-2.0205"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-xml-simple": {
+    "Version": "XML::Simple-2.25",
+    "url": [
+      "https://www.cpan.org/authors/id/G/GR/GRANTM/XML-Simple-2.25.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": [
+        "XML::SAX-1.02"
+      ]
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "perl-xml-writer": {
+    "Version": "XML::Writer-0.900",
+    "url": [
+      "https://www.cpan.org/authors/id/J/JO/JOSEPHW/XML-Writer-0.900.tar.gz"
+    ],
+    "Dependencies": {
+      "required": [],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "perl Makefile.PL &&\nmake             &&\nmake test",
+      "make install"
+    ]
+  },
+  "pavucontrol": {
+    "Version": "pavucontrol-4.0",
+    "url": [
+      "http://freedesktop.org/software/pulseaudio/pavucontrol/pavucontrol-4.0.tar.xz"
+    ],
+    "Dependencies": {
+      "required": [
+        "Gtkmm-3.24.3",
+        "libcanberra-0.30",
+        "libsigc++-2.10.6",
+        "PulseAudio-14.2"
+      ],
+      "recommended": [],
+      "optional": []
+    },
+    "Commands": [
+      "./configure --prefix=/usr --docdir=/usr/share/doc/pavucontrol-4.0 &&\nmake",
+      "make install"
+    ]
+  }
+}
