@@ -41,9 +41,9 @@ def moduleCollect(soup):
                 for j in i.find_all('a', title=True, class_='xref'): # grab blfs deps
                     deps[y].append(j['title'])
 
-            for j in i.find_all('a', class_='ulink'): # greb external deps
-                deps[y].append(j.text)
-                scheme[j.text] = {'url': j['href']}
+                for j in i.find_all('a', class_='ulink'): # greb external deps
+                    deps[y].append(j.text)
+                    scheme[j.text] = {'url': j['href']}
         
         commands = []
         for i in module.find_all('kbd', class_='command'):  # remove whitespace
