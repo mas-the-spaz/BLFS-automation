@@ -1,13 +1,13 @@
-from typing import TextIO
-
 import requests
 from bs4 import BeautifulSoup as bs4
 import json
 import re
 
-baseUrl = 'https://github.com/mas-the-spaz/python-blfs.git'
+baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'
 
 scheme = {}
+
+# Notes: add md5 hash
 
 '''
 JSON scheme
@@ -30,18 +30,18 @@ def packageCollect(package, tagClass, tag):
     name = package.find(tag, class_=tagClass).find('a').get('id')  # string of name
 
     deps = {'required': [], 'recommended': [], 'optional': []}  # remove redundancy?
-    for y in ['required', 'recommended', 'optional']:
+    for y in deps:
         for i in package.find_all('p', class_=y):
             for j in i.find_all('a', title=True, class_='xref'):  # grab blfs deps
-                deps[y].append(j['title'])
+                deps[y].append(re.sub(r'\n\s+', ' ', j['title']))
 
             for j in i.find_all('a', class_='ulink'):  # grab external deps
-                deps[y].append(j.text)
-                scheme[j.text.replace('\n', ' ')] = {'url': j['href']}  # get md5 ?
+                deps[y].append(re.sub(r'\n\s+', ' ', j.text))
+                scheme[re.sub(r'\n\s+', ' ', j.text)] = {'url': j['href']}
 
     commands = []
     for i in package.find_all('kbd', class_='command'):  # remove whitespace
-        commands.append(re.sub('\s+\\\\\s+', ' ', i.text))
+        commands.append(re.sub("\s+\\\\\\n\s+", ' ', i.text))  # does not work with 
 
     urls = []
     if package.find('div', class_='itemizedlist'):
@@ -69,5 +69,3 @@ with open('Wishlist.txt', 'r+') as u:  # eventually this will download the origi
 
 with open('dependencies.json', 'w+') as j:
     json.dump(scheme, j)
-
-
