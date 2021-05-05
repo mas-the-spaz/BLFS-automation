@@ -1,2 +1,0 @@
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/pavucontrol.html
-https://www.linuxfromscratch.org/blfs/view/stable/multimedia/mplayer.html
