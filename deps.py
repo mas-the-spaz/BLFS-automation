@@ -33,4 +33,7 @@ if not os.path.exists('dependencies.json'):
     exit
 
 with open('dependencies.json', 'r+') as scheme:
-    print(scheme[sys.argv[1]])
+    data = json.load(scheme)
+    
+print(data[str(sys.argv[1])])
+
