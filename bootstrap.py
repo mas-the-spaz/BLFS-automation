@@ -24,7 +24,7 @@ JSON scheme
 }
 '''
 
-baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html' # URL containing all package urls
+baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
 
 links = []
 scheme = {}
@@ -34,7 +34,7 @@ def packageCollect(package, tagClass, tag):
     version = package.find(tag, class_=tagClass).text.strip()  # string of version
     name = package.find(tag, class_=tagClass).find('a').get('id')  # string of name
 
-    deps = {'required': [], 'recommended': [], 'optional': []}  # remove redundancy?
+    deps = {'required': [], 'recommended': [], 'optional': []}
     for y in deps:
         for i in package.find_all('p', class_=y):
             for j in i.find_all('a', title=True, class_='xref'):  # grab blfs deps
@@ -46,11 +46,11 @@ def packageCollect(package, tagClass, tag):
 
     commands = []
     for i in package.find_all('kbd', class_='command'):  # remove whitespace
-        commands.append(re.sub("\s+\\\\\\n\s+", ' ', i.text))  # does not work with 
+        commands.append(re.sub("\s+\\\\\\n\s+", ' ', i.text).replace('\n',' '))  # does not work with "r"
 
     urls = []
     if package.find('div', class_='itemizedlist'):
-        for i in package.find('div', class_='itemizedlist').find_all('a', class_='ulink'): # if package has urls add to array
+        for i in package.find('div', class_='itemizedlist').find_all('a', class_='ulink'):  # if package has urls add to array
             urls.append(i['href'])
 
     print("Downloading info for {0}".format(name))
