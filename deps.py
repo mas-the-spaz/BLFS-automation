@@ -5,6 +5,8 @@ import os
 errors = ["Dependencies.json not found! Try running bootstrap.py to rebuild dependency database",
           "no dependencies found for (package arguments)"]
 
+extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
+
 '''
 flags 
     list or DOWNLOAD?
@@ -27,11 +29,11 @@ check if ftp is only link - if yes download
 check if package is already downloaded
 check if package argument not exist
 
-if package only -- download function        ---pos
-if -l package -- list function              ---opt (default is download)
-if -r or -o -- also do those deps           ---opt (default is only required)
-if -a download all ONLY
-if -c list commands for that package
+if -d package -- download function          ---opt ---override everything
+if -l package -- list function              ---opt 
+if -r or -o -- also do those deps           ---opt ---only works with -l or -d CHECK THAT   
+if -a download all ONLY                     ---opt 
+if -c list commands for that package        ---opt
 
 
 '''
@@ -39,15 +41,15 @@ if -c list commands for that package
 '''
 JSON scheme
 {
-'Package Name': {                                         ---string
-        'Version': '1.0.0',                               ---string
-        'URL': ['http://asdfasdfasdf','http://patch],     ---array (includes patches urls)
-        'Deps': {                                         ---dict or None
-            'Required': ['first', 'second'],              ---array or None
-            'Recommended': ['first', 'second'],           ---array or None
-            'Optional': ['first', 'second']               ---array or None
+'Package Name': {                                         
+        'Version': '1.0.0',                               
+        'URL': ['http://asdfasdfasdf','http://patch],     
+        'Deps': {                                         
+            'Required': ['first', 'second'],              
+            'Recommended': ['first', 'second'],           
+            'Optional': ['first', 'second']               
             }, 
-        'Commands': ['Installation commands']             ---array
+        'Commands': ['Installation commands']             
         }
 }
 '''
@@ -61,7 +63,13 @@ def ListCommands(dat, arguments):
 def DownloadAll(dat):
     for package in dat:
         for url in dat[package]['url']:
-            print(url)
+            for i in extensions:
+                if i in url:
+                    print(url)
+
+
+def DownloadDeps(dat, args):
+    print('hi kupfer')
 
 
 def parserFunction(dat):
@@ -71,18 +79,21 @@ def parserFunction(dat):
                                             'space', action='store_true')
     parser.add_argument('-c', '--commands', metavar='PACKAGE', help='List installation commands for a given package.',
                         default=False)
+    parser.add_argument('-d', '--download', help='Download given BLFS package', metavar='PACKAGE')
     parser.add_argument('-l', '--list', metavar='PACKAGE', help='List dependencies instead of downloading.',
                         default=False)
-    parser.add_argument('-o', '--optional', metavar='', help='Allow installation of optional packages.', default=False)
-    parser.add_argument('-r', '--recommended', metavar='', help='Allow installation of recommended packages.',
-                        default=False)
-    parser.add_argument('-d', '--download', help='Download given BLFS package', metavar='PACKAGE')
+    parser.add_argument('-o', '--optional', help='Allow installation of optional packages.', default=False,
+                        action='store_true')
+    parser.add_argument('-r', '--recommended', help='Allow installation of recommended packages.',
+                        default=False, action='store_true')
     args = parser.parse_args()
-    # if no args print help
+    if not any(vars(args).values()):
+        parser.print_help()
 
-    if args.download in dat:
-        # case break
-        if args.commands:
+    if args.download or args.commands or args.list in dat:
+        if args.download:
+            DownloadDeps(dat, args)
+        elif args.commands:
             ListCommands(dat, args)
 
     if args.all:

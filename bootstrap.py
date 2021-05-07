@@ -4,7 +4,6 @@ import json
 import re
 
 # Notes: add md5 hash?
-# Notes: add redundancy check for external (non BLFS) package urls
 # Notes: add requirements.txt, add README.md
 # Notes: remove SSL error
 
@@ -46,7 +45,7 @@ def packageCollect(package, tagClass, tag):
 
             for j in i.find_all('a', class_='ulink'):  # grab external deps
                 deps[y].append(StripText(j.text))
-                scheme[StripText(j.text)] = {'url': j['href']}  # manually add url to scheme
+                scheme[StripText(j.text)] = {'url': [j['href']]}  # manually add url to scheme
 
     commands = []
     for i in package.find_all('kbd', class_='command'):  # remove whitespace
@@ -54,9 +53,9 @@ def packageCollect(package, tagClass, tag):
 
     urls = []
     if package.find('div', class_='itemizedlist'):
-        for i in package.find('div', class_='itemizedlist').find_all('a',
-                                                                     class_='ulink'):  # if package has urls add to array
-            urls.append(i['href'])
+        for i in package.find_all('div', class_='itemizedlist'):
+            for j in i.find_all('a', class_='ulink'):  # if package has urls add to array
+                urls.append(j['href'])
 
     print("Downloading info for {0}".format(name))
     scheme[name] = {'Version': version, 'url': urls, 'Dependencies': deps, 'Commands': commands}
