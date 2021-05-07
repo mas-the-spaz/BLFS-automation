@@ -48,25 +48,15 @@ JSON scheme
 '''
 
 def FtpUrlCheck(UrlsList):
-    # takes an array of urls (from the package dict) and performs check
     NewList = []
-    # if index is odd (0, 2, etc) - add to new list
-    # if index is even - if ftp:// is in [i] skip
-    # else add to list 
-
     i = 0
     while i < len(UrlsList):
-        if i % 2 == 0 and 'ftp://' in UrlsList[i]:
+        if (i % 2) == 0:
+            NewList.append(UrlsList[i])
+        elif not 'ftp://' in UrlsList[i]:
             NewList.append(UrlsList[i])
         i +=1
-        print(NewList)
-        
-
-
-fff = ['ftp://sss', 'ftp://aaa', 'greg', 'ftp://hhh']
-
-
-FtpUrlCheck(fff)
+        return NewList
 
 
 def ListCommands(dat, pkg):
