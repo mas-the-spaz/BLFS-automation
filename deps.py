@@ -69,6 +69,11 @@ def DownloadAll(dat):
 
 
 def DownloadDeps(dat, args):
+    if args.optional:
+        print('hi kupfer')
+
+
+def DepsList(dat, args):
     print('hi kupfer')
 
 
@@ -95,6 +100,8 @@ def parserFunction(dat):
             DownloadDeps(dat, args)
         elif args.commands:
             ListCommands(dat, args)
+        elif args.list:
+            DepsList(dat, args)
 
     if args.all:
         DownloadAll(dat)
