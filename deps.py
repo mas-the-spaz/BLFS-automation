@@ -1,6 +1,15 @@
 import argparse
 import json
 import os
+from itertools import product
+import wget
+
+''''
+Todo:
+1) rewrite 'all' function
+2) consolidate code
+
+'''
 
 errors = ["Dependencies.json not found! Try running bootstrap.py to rebuild dependency database",
           "no dependencies found for "]
@@ -47,16 +56,19 @@ JSON scheme
 }
 '''
 
-def FtpUrlCheck(UrlsList):
+
+def FtpUrlCheck(UrlsList):  # removes second http also....
     NewList = []
     i = 0
     while i < len(UrlsList):
         if (i % 2) == 0:
             NewList.append(UrlsList[i])
         elif not 'ftp://' in UrlsList[i]:
+            print(UrlsList[i])
             NewList.append(UrlsList[i])
-        i +=1
-        return NewList
+        i += 1
+
+    return NewList
 
 
 def ListCommands(dat, pkg):
@@ -67,20 +79,23 @@ def ListCommands(dat, pkg):
         print(command)
 
 
-def DownloadAll(dat, exts):  # list (eventually download) all packages
-    for package in dat:
-        for url in dat[package]['url']:
+def DownloadAll(dat, exts=None):  # list (eventually download) all packages
+    for packageName, PackageData in dat.items():  # package
+        NonFtp = FtpUrlCheck(PackageData['url'])
+        for url in NonFtp:  # url list
             for i in exts:
                 if i in url:
+                    # create download directory and wget
                     print(url)
 
 
-def DownloadDeps(dat, pkg, rec=None, opt=None):
+def DownloadDeps(dat, pkg, rec=None, opt=None):  # maybe use *args for dl types?
+    # calls DepsList than download from the list?
     if opt:
-        print('required, recommneded, and optional')
+        print('required, recommended, and optional')
     if rec:
         print('required and recommended')
-    
+
     print(dat[pkg])
 
 
@@ -88,13 +103,18 @@ def DepsList(dat, pkg, rec=None, opt=None):
     if not pkg in dat:
         print('{0} "{1}"'.format(errors[1], pkg))
         exit()
+    # list deps based on flags provided (opt > rec > req)
+    temp = []
+    deps = []
+    for dep in dat[pkg]['Dependencies']['optional']:
+        print(dep)
 
-    print('list packages')
 
 
 def parserFunction(dat):
     parser = argparse.ArgumentParser(description='This script takes a valid BLFS package as an input and either lists '
-                                                 'the dependencies, or downloads the necessary packages ', prog='deps.py')
+                                                 'the dependencies, or downloads the necessary packages ',
+                                     prog='deps.py')
     parser.add_argument('-a', '--all', help='Will download ALL packages. Uses a lot of time and '
                                             'space', action='store_true')
     parser.add_argument('-c', '--commands', metavar='PACKAGE', help='List installation commands for a given package.',
@@ -112,12 +132,12 @@ def parserFunction(dat):
     elif args.list:
         DepsList(dat, args.list, args.recommended, args.optional)
     elif args.commands:
-        ListCommands(dat, args.commands)
+        ListCommands(dat, args.commands)  # maybe add basic autocomplete
     elif args.all:
         DownloadAll(dat, extensions)
     else:
         parser.print_help()
-        
+
 
 if not os.path.exists('dependencies.json'):
     print(errors[0])
