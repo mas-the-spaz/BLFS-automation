@@ -80,8 +80,8 @@ def ListCommands(dat, pkg):
 
 
 def DownloadAll(dat, exts=None):  # list (eventually download) all packages
-    for packageName, PackageData in dat.items():  # package
-        NonFtp = FtpUrlCheck(PackageData['url'])
+    for PackageData in dat:  # package
+        NonFtp = FtpUrlCheck(dat[PackageData]['url'])
         for url in NonFtp:  # url list
             for i in exts:
                 if i in url:
