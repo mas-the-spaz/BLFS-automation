@@ -2,6 +2,11 @@ import requests
 from bs4 import BeautifulSoup as Bs4
 import json
 import re
+import warnings
+
+warnings.filterwarnings("ignore") # surpress ssl cert warnings
+
+
 
 # Notes: add md5 hash?
 # Notes: add requirements.txt, add README.md
@@ -23,6 +28,8 @@ JSON scheme
 }
 '''
 
+
+
 baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
 
 links = []
@@ -34,8 +41,7 @@ def StripText(string):
 
 
 def packageCollect(package, tagClass, tag):
-    version = StripText(package.find(tag, class_=tagClass).text).strip()  # string of version
-    name = package.find(tag, class_=tagClass).find('a').get('id')  # string of name
+    name = StripText(package.find(tag, class_=tagClass).text).strip()  # string of name
 
     deps = {'required': [], 'recommended': [], 'optional': []}
     for y in deps:
@@ -45,7 +51,12 @@ def packageCollect(package, tagClass, tag):
 
             for j in i.find_all('a', class_='ulink'):  # grab external deps
                 deps[y].append(StripText(j.text))
-                scheme[StripText(j.text)] = {'url': [j['href']]}  # manually add url to scheme
+                scheme[StripText(j.text)] = {'url': [j['href']], "Dependencies": {
+            "required": [],
+            "recommended": [],
+            "optional": []
+        }, 'Commands': []}  # manually add url to scheme
+        # improve above code to save space?
 
     commands = []
     for i in package.find_all('kbd', class_='command'):  # remove whitespace
@@ -58,7 +69,7 @@ def packageCollect(package, tagClass, tag):
                 urls.append(j['href'])
 
     print("Downloading info for {0}".format(name))
-    scheme[name] = {'Version': version, 'url': urls, 'Dependencies': deps, 'Commands': commands}
+    scheme[name] = {'url': urls, 'Dependencies': deps, 'Commands': commands}
 
 
 res = requests.get(baseUrl, verify=False)  # Begin...
