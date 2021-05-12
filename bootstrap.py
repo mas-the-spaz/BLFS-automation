@@ -70,15 +70,14 @@ def packageCollect(package, tagClass, tag):
     scheme[name] = {'name': name, 'url': urls, 'Dependencies': deps, 'Commands': commands}
 
 
-#res = requests.get(baseUrl, verify=False)  # Begin...
-#soup = Bs4(res.text, 'html.parser')
-#el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
-#print("Collecting base URLs....")
-#for i in el.find_all('a', href=True):  # for every url... check if has hashtag... if not add to array
-#    if not '#' in i['href']:
-#        links.append('https://www.linuxfromscratch.org/blfs/view/stable/' + i['href'])
+res = requests.get(baseUrl, verify=False)  # Begin...
+soup = Bs4(res.text, 'html.parser')
+el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
+print("Collecting base URLs....")
+for i in el.find_all('a', href=True):  # for every url... check if has hashtag... if not add to array
+    if not '#' in i['href']:
+        links.append('https://www.linuxfromscratch.org/blfs/view/stable/' + i['href'])
 
-links = ['https://www.linuxfromscratch.org/blfs/view/stable/general/unzip.html']
 
 for k in links:
     PkgCount += 1
@@ -94,6 +93,10 @@ for k in links:
 
 if PkgCount == len(links):
     print('All packages successfully downloaded!')
+else:
+    print('Not all packages have been downloaded...')
+    print('Number of urls: {}'.format(str(len(links))))
+    print('Number of downloaded packages: {}'.format(PkgCount))
 
 with open('dependencies.json', 'w+') as j:  # dump info to json file
     json.dump(scheme, j)

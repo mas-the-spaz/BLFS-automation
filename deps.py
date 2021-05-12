@@ -11,6 +11,7 @@ Todo:
 5) basic autocomplete checker (maybe just version number)
 6) check if package is already downloaded
 7) install packages in this order
+8) global try, catch for all downloads?
 '''
 
 default_download_path = '/blfs_sources/'
@@ -94,9 +95,11 @@ def DownloadDeps(dat, pkg, exts, rec=None, opt=None):
         for url in NonFtp:  # url list
             for i in exts:  # consolidate for loops
                 if i in url:
-                    if not os.path.exists(os.path.basename(url)):
+                    if not os.path.isfile(default_download_path + os.path.basename(url)):
                         wget.download(url, default_download_path + os.path.basename(url))
-                        print('Downloading: {0}\n'.format(url))
+                        print('\nDownloading: {0}\n'.format(url))
+                    else:
+                        print('{} already has been downloaded'.format(os.path.basename(url)))
 
 
 def DepsList(dat, pkg, rec=None, opt=None):
