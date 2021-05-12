@@ -8,6 +8,8 @@ import wget
 Todo:
 1) rewrite 'all' function
 2) consolidate code
+3) add dep type functionality
+4) map, filter, reduce
 
 '''
 
@@ -19,41 +21,8 @@ extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
 
 '''
-flags 
-    list or DOWNLOAD?
-    -l --list
-
-    include recommended and optional?
-    -r --recommended, -o --optional
-
-    list commands (possibly output to shell) or NORMAL (download)
-    -c --commands 
-
-    package <name>  REQUIRED
-    -p --package
-
-
-main function
- 
 output specific order of installation 
-check if ftp is only link - if yes download
 check if package is already downloaded
-'''
-
-'''
-JSON scheme
-{
-'Package Name': {                                         
-        'Version': '1.0.0',                               
-        'URL': ['http://asdfasdfasdf','http://patch],     
-        'Deps': {                                         
-            'Required': ['first', 'second'],              
-            'Recommended': ['first', 'second'],           
-            'Optional': ['first', 'second']               
-            }, 
-        'Commands': ['Installation commands']             
-        }
-}
 '''
 
 
@@ -89,12 +58,8 @@ def DownloadAll(dat, exts=None):  # list (eventually download) all packages
 
 
 def DownloadDeps(dat, pkg, rec=None, opt=None):
-    __types = ['required']
-    if rec:
-        __types.append('recommended')  
-    elif opt:  # if both flags (-o, -r) are passed, warn user that defaults to rec only
-        __types.extend(['recommended', 'optional'])
-    print(__types)
+    # get value from DepsList, and dl each one
+    return
 
 
 def DepsList(dat, pkg, rec=None, opt=None):
@@ -102,20 +67,26 @@ def DepsList(dat, pkg, rec=None, opt=None):
         print('{0} "{1}"'.format(errors[1], pkg))
         exit()
     else:
-    # list deps based on flags provided (opt > rec > req)
-        GetChild(dat,[pkg])
+        __types = ['required']
+    if rec:
+        __types.append('recommended')  
+    elif opt:  # if both flags (-o, -r) are passed, warn user that defaults to rec only
+        __types.extend(['recommended', 'optional'])
+
+    return GetChild(dat,[pkg], __types)
 
 
-def GetChild(dat, PkgList):
+def GetChild(dat, PkgList, types):
     for pkg in PkgList:
         if pkg in dat:
-            for dep in dat[pkg]['Dependencies']['required']:
+            for dep in dat[pkg]['Dependencies'][]:
                 if not dep in PkgList: # prevents circular dependency problems
                     PkgList.append(dep)
     
-    print(PkgList)
+    return PkgList
 
-
+def Output(): # takes list and outputs to stdout
+    return 
 # def GetChild(dat, PkgList):
 #     temp = []
 #     for pkg in PkgList:
@@ -148,7 +119,8 @@ def parserFunction(dat):
     if args.download:
         DownloadDeps(dat, args.download, args.recommended, args.optional)
     elif args.list:
-        DepsList(dat, args.list, args.recommended, args.optional)
+        t = DepsList(dat, args.list, args.recommended, args.optional)
+        print(t) #####
     elif args.commands:
         ListCommands(dat, args.commands)  # maybe add basic autocomplete
     elif args.all:
@@ -164,6 +136,4 @@ if not os.path.exists('dependencies.json'):
 with open('dependencies.json', 'r+') as scheme:
     data = json.load(scheme)
 
-
-DepsList(data, 'alsa-firmware-1.2.4', True, True)  #needs to be case sensitive
-#parserFunction(data)
+parserFunction(data)
