@@ -94,7 +94,7 @@ def DownloadDeps(dat, pkg, exts, rec=None, opt=None):
         for url in NonFtp:  # url list
             for i in exts:  # consolidate for loops
                 if i in url:
-                    if not os.path.isfile(os.path.basename(url)):
+                    if not os.path.exists(os.path.basename(url)):
                         wget.download(url, default_download_path + os.path.basename(url))
                         print('Downloading: {0}\n'.format(url))
 

@@ -4,9 +4,10 @@ import json
 import re
 import warnings
 
-warnings.filterwarnings("ignore")  # surpress ssl cert warnings
+warnings.filterwarnings("ignore")  # suppress ssl cert warnings
 
-# Notes: add md5 hash?
+# Todo:
+# add md5 hash check
 # Notes: add requirements.txt, add README.md
 # Notes: remove SSL error
 
@@ -30,6 +31,7 @@ baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # 
 
 links = []
 scheme = {}
+PkgCount = 0
 
 
 def StripText(string):
@@ -68,24 +70,30 @@ def packageCollect(package, tagClass, tag):
     scheme[name] = {'name': name, 'url': urls, 'Dependencies': deps, 'Commands': commands}
 
 
-res = requests.get(baseUrl, verify=False)  # Begin...
-soup = Bs4(res.text, 'html.parser')
-el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
-print("Collecting base URLs....")
-for i in el.find_all('a', href=True):  # for every url... check if has hashtag... if not add to array
-    if not '#' in i['href']:
-        links.append('https://www.linuxfromscratch.org/blfs/view/stable/' + i['href'])
+#res = requests.get(baseUrl, verify=False)  # Begin...
+#soup = Bs4(res.text, 'html.parser')
+#el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
+#print("Collecting base URLs....")
+#for i in el.find_all('a', href=True):  # for every url... check if has hashtag... if not add to array
+#    if not '#' in i['href']:
+#        links.append('https://www.linuxfromscratch.org/blfs/view/stable/' + i['href'])
 
-for i in links:
-    res = requests.get(i.rstrip(), verify=False)
+links = ['https://www.linuxfromscratch.org/blfs/view/stable/general/unzip.html']
+
+for k in links:
+    PkgCount += 1
+    res = requests.get(k.rstrip(), verify=False)
     soup = Bs4(res.text, 'html.parser')  # get webpage contents
 
-    if soup.find_all('div', class_='sect2'):  # if soup is module instead of std package
+    if len(soup.find_all('div', class_='sect2')) > 1:  # if soup is module instead of std package
         for module in soup.find_all('div', class_='sect2'):
             if module.find_all('div', class_='package'):  # limit to modules only
                 packageCollect(module, "sect2", "h2")  # call function on module
     else:
         packageCollect(soup, "sect1", "h1")  # call function on std package
+
+if PkgCount == len(links):
+    print('All packages successfully downloaded!')
 
 with open('dependencies.json', 'w+') as j:  # dump info to json file
     json.dump(scheme, j)
