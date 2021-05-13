@@ -2,6 +2,7 @@ import argparse
 import json
 import os
 import wget
+import tarfile
 
 ''''
 Todo:
@@ -65,21 +66,22 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     return commands
 
 
-def BuildPkg(dat, pkg):  # install the given BLFS package 
+def BuildPkg(dat, pkg, exts):  # install the given BLFS package
     CheckDir()
-    # check if package is downloaded (default dl dir is /blfs_sources/)
-    # if data[dep][url] strip last backslash exists
-    # if not download it
-    # untar package (diff for zip/bz2/gz/xz)
+    DownloadDeps(dat, pkg, exts)
+    f = dat[pkg]['url'][0]
+    print(f)
+    # untar package (diff for zip/bz2/gz/xz) cd into pkg[name]
     # get installation commands from json file
     # for each command, pipe into bash
     commands = ListCommands(dat, pkg)
     for command in commands:
         print(command)
 
-def DownloadDeps(dat, pkg, exts, all, rec=None, opt=None):
+
+def DownloadDeps(dat, pkg, exts, DlAll=None, rec=None, opt=None):
     CheckDir()
-    if all:
+    if DlAll:
         DlList = dat
     else:
         DlList = DepsList(dat, pkg, rec, opt)
@@ -157,7 +159,7 @@ def parserFunction(dat):
     elif args.all:
         DownloadDeps(dat, args.download, extensions, True, args.recommended, args.optional)
     elif args.build:
-        BuildPkg(dat, args.build)
+        BuildPkg(dat, args.build, extensions)
     else:
         parser.print_help()
 

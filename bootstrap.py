@@ -9,7 +9,6 @@ warnings.filterwarnings("ignore")  # suppress ssl cert warnings
 # Todo:
 # add md5 hash check
 # Notes: add requirements.txt, add README.md
-# Notes: remove SSL error
 
 '''
 JSON scheme
