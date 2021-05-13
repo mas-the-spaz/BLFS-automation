@@ -12,6 +12,8 @@ Todo:
 6) check if package is already downloaded
 7) install packages in this order
 8) global try, catch for all downloads?
+9) rename repo to 'BLFS-dependency'
+10) create class?
 '''
 
 default_download_path = '/blfs_sources/'
@@ -53,17 +55,17 @@ def FtpUrlCheck(UrlsList):
     return NewList
 
 
-def ListCommands(dat, pkg):
+def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
     commands = []
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
-    for command in dat[pkg]['Commands']:  # list commands
+    for command in dat[pkg]['Commands']: 
         commands.append(command)
     return commands
 
 
-def BuildPkg(dat, pkg):
+def BuildPkg(dat, pkg):  # install the given BLFS package 
     CheckDir()
     # check if package is downloaded (default dl dir is /blfs_sources/)
     # if data[dep][url] strip last backslash exists
@@ -75,25 +77,17 @@ def BuildPkg(dat, pkg):
     for command in commands:
         print(command)
 
-
-def DownloadAll(dat, exts=None):  # list (eventually download) all packages
+def DownloadDeps(dat, pkg, exts, all, rec=None, opt=None):
     CheckDir()
-    for PackageData in dat:  # package
-        NonFtp = FtpUrlCheck(dat[PackageData]['url'])
-        for url in NonFtp:  # url list
-            for i in exts:  # consolidate for loops
-                if i in url:
-                    wget.download(url, default_download_path)
-                    print(url)
+    if all:
+        DlList = dat
+    else:
+        DlList = DepsList(dat, pkg, rec, opt)
 
-
-def DownloadDeps(dat, pkg, exts, rec=None, opt=None):
-    CheckDir()
-    DlList = DepsList(dat, pkg, rec, opt)
     for package in DlList:
         NonFtp = FtpUrlCheck(dat[package]['url'])
-        for url in NonFtp:  # url list
-            for i in exts:  # consolidate for loops
+        for url in NonFtp:  
+            for i in exts: 
                 if i in url:
                     if not os.path.isfile(default_download_path + os.path.basename(url)):
                         wget.download(url, default_download_path + os.path.basename(url))
@@ -110,7 +104,7 @@ def DepsList(dat, pkg, rec=None, opt=None):
         __types = ['required']
     if rec:
         __types.append('recommended')
-    elif opt:  # if both flags (-o, -r) are passed, warn user that defaults to rec only
+    elif opt: 
         __types.extend(['recommended', 'optional'])
     return GetChild(dat, [pkg], __types)
 
@@ -154,14 +148,14 @@ def parserFunction(dat):
     args = parser.parse_args()
 
     if args.download:
-        DownloadDeps(dat, args.download, extensions, args.recommended, args.optional)
+        DownloadDeps(dat, args.download, extensions, False, args.recommended, args.optional)
     elif args.list:
         print(messages[6])
         Output(DepsList(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
         Output(ListCommands(dat, args.commands), False)
     elif args.all:
-        DownloadAll(dat, extensions)
+        DownloadDeps(dat, args.download, extensions, True, args.recommended, args.optional)
     elif args.build:
         BuildPkg(dat, args.build)
     else:
