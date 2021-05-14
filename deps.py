@@ -8,9 +8,9 @@ import subprocess
 
 ''''
 Todo:
-1) rewrite 'all' function
-5) basic autocomplete checker (maybe just version number)
-9) rename repo to 'BLFS-automator-script'
+1) basic autocomplete checker (maybe just for version number)
+9) rename repo to 'BLFS-automation-script'
+10) add comments
 '''
 
 default_download_path = '/blfs_sources/'
@@ -25,7 +25,7 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
 
-def CheckDir():
+def CheckDir():  # download directory housekeeping function
     if not os.path.exists(default_download_path):
         print(messages[2])
         try:
@@ -41,7 +41,7 @@ def CheckDir():
     return
 
 
-def FtpUrlCheck(UrlsList):
+def FtpUrlCheck(UrlsList):  # removes ftp links from url list, but only if they ar duplicates
     NewList = []
     i = 0
     while i < len(UrlsList):
@@ -64,8 +64,7 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     return CommandsList
 
 
-def BuildPkg(dat, pkg, exts):  # install the given BLFS package
-    # set cwd to default_download_path
+def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
     DownloadDeps(dat, [pkg], exts)
     FileToExtract = dat[pkg]['url'][0]
     if tarfile.is_tarfile(os.path.basename(FileToExtract)):
@@ -84,9 +83,9 @@ def BuildPkg(dat, pkg, exts):  # install the given BLFS package
     # for each command, pipe into bash
 
 
-def DownloadDeps(dat, DlList, exts):
+def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or some dependencies)
     CheckDir()
-    for package in DlList:
+    for package in dlList:
         if package in dat:
             NonFtp = FtpUrlCheck(dat[package]['url'])
             for url in NonFtp:
@@ -99,7 +98,7 @@ def DownloadDeps(dat, DlList, exts):
                             print('{} already has been downloaded'.format(os.path.basename(url)))
 
 
-def DepsList(dat, pkg, rec=None, opt=None):
+def DepsList(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
@@ -112,9 +111,7 @@ def DepsList(dat, pkg, rec=None, opt=None):
     return GetChild(dat, [pkg], __types)
 
 
-def GetChild(dat, PkgList, types):  # way to many for loops!!!!
-    # Gets the child dependency of each package and recursively lists until the end of the tree
-    # Maybe child becomes parent of next level (binary tree with n depth)
+def GetChild(dat, PkgList, types):  # recursively lists all dependencies for a given package
     for pkg in PkgList:
         if pkg in dat:
             for index in types:
@@ -124,7 +121,7 @@ def GetChild(dat, PkgList, types):  # way to many for loops!!!!
     return PkgList
 
 
-def Output(lst, reverse):  # takes list and outputs to stdout
+def Output(lst, reverse):  # outputs thing to stdout
     if reverse:
         lst.reverse()
     else:
@@ -133,7 +130,7 @@ def Output(lst, reverse):  # takes list and outputs to stdout
         print(thing)
 
 
-def parserFunction(dat):
+def parserFunction(dat):  # main parser function
     parser = argparse.ArgumentParser(description='This script takes a valid BLFS package as an input and either lists '
                                                  'the dependencies, or downloads the necessary packages. (Input is '
                                                  'cAsE sEnsItIvE)',
@@ -147,8 +144,7 @@ def parserFunction(dat):
     parser.add_argument('-l', '--list', metavar='PACKAGE', help='List dependencies instead of downloading.',
                         default=False)
     parser.add_argument('-o', '--optional', help='Allow installation of optional packages.', action='store_true')
-    parser.add_argument('-r', '--recommended', help='Allow installation of recommended packages.',
-                        default=False, action='store_true')
+    parser.add_argument('-r', '--recommended', help='Allow installation of recommended packages.', action='store_true')
     args = parser.parse_args()
 
     if args.download:
