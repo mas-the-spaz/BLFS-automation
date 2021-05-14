@@ -3,27 +3,24 @@ import json
 import os
 import wget
 import tarfile
+import zipfile
+import subprocess
 
 ''''
 Todo:
 1) rewrite 'all' function
-2) consolidate code
-4) map, filter, reduce
 5) basic autocomplete checker (maybe just version number)
-6) check if package is already downloaded
-7) install packages in this order
-8) global try, catch for all downloads?
-9) rename repo to 'BLFS-dependency'
-10) create class?
+9) rename repo to 'BLFS-automator-script'
 '''
 
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
-messages = ["Dependencies.json not found! Try running bootstrap.py to rebuild dependency database",
+messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database",
             "no dependencies found for ", "Download directory not found - creating one.",
             "Creation of download directory failed!", "Successfully created directory.",
-            "Found existing download directory. Proceeding...", "Install packages in this order:"]
+            "Found existing download directory. Proceeding...", "Install packages in this order:",
+            "Downloaded file could not be decompressed!"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -40,6 +37,7 @@ def CheckDir():
             print(messages[4])
     else:
         print(messages[5])
+    os.chdir(default_download_path)
     return
 
 
@@ -57,45 +55,48 @@ def FtpUrlCheck(UrlsList):
 
 
 def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
-    commands = []
+    CommandsList = []
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
     for command in dat[pkg]['Commands']: 
-        commands.append(command)
-    return commands
+        CommandsList.append(command)
+    return CommandsList
 
 
 def BuildPkg(dat, pkg, exts):  # install the given BLFS package
-    CheckDir()
-    DownloadDeps(dat, pkg, exts)
-    f = dat[pkg]['url'][0]
-    print(f)
-    # untar package (diff for zip/bz2/gz/xz) cd into pkg[name]
-    # get installation commands from json file
-    # for each command, pipe into bash
+    # set cwd to default_download_path
+    DownloadDeps(dat, [pkg], exts)
+    FileToExtract = dat[pkg]['url'][0]
+    if tarfile.is_tarfile(os.path.basename(FileToExtract)):
+        with tarfile.open(os.path.basename(FileToExtract), "r") as tar_ref:
+            tar_ref.extractall()
+            os.chdir(tar_ref.getnames()[0])
+
+    if zipfile.is_zipfile(os.path.basename(FileToExtract)):
+        with zipfile.ZipFile(os.path.basename(FileToExtract), "r") as zip_ref:
+            zip_ref.extractall()
+            os.chdir(tar_ref.getnames()[0])
+
     commands = ListCommands(dat, pkg)
     for command in commands:
         print(command)
+    # for each command, pipe into bash
 
 
-def DownloadDeps(dat, pkg, exts, DlAll=None, rec=None, opt=None):
+def DownloadDeps(dat, DlList, exts):
     CheckDir()
-    if DlAll:
-        DlList = dat
-    else:
-        DlList = DepsList(dat, pkg, rec, opt)
-
     for package in DlList:
-        NonFtp = FtpUrlCheck(dat[package]['url'])
-        for url in NonFtp:  
-            for i in exts: 
-                if i in url:
-                    if not os.path.isfile(default_download_path + os.path.basename(url)):
-                        wget.download(url, default_download_path + os.path.basename(url))
-                        print('\nDownloading: {0}\n'.format(url))
-                    else:
-                        print('{} already has been downloaded'.format(os.path.basename(url)))
+        if package in dat:
+            NonFtp = FtpUrlCheck(dat[package]['url'])
+            for url in NonFtp:
+                for i in exts:
+                    if i in url:
+                        if not os.path.isfile(os.path.basename(url)):
+                            print('\nDownloading: {0}\n'.format(url))
+                            wget.download(url, os.path.basename(url))
+                        else:
+                            print('{} already has been downloaded'.format(os.path.basename(url)))
 
 
 def DepsList(dat, pkg, rec=None, opt=None):
@@ -113,6 +114,7 @@ def DepsList(dat, pkg, rec=None, opt=None):
 
 def GetChild(dat, PkgList, types):  # way to many for loops!!!!
     # Gets the child dependency of each package and recursively lists until the end of the tree
+    # Maybe child becomes parent of next level (binary tree with n depth)
     for pkg in PkgList:
         if pkg in dat:
             for index in types:
@@ -150,14 +152,14 @@ def parserFunction(dat):
     args = parser.parse_args()
 
     if args.download:
-        DownloadDeps(dat, args.download, extensions, False, args.recommended, args.optional)
+        DownloadDeps(dat, DepsList(dat, args.download, args.recommended, args.optional), extensions)
     elif args.list:
         print(messages[6])
         Output(DepsList(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
         Output(ListCommands(dat, args.commands), False)
     elif args.all:
-        DownloadDeps(dat, args.download, extensions, True, args.recommended, args.optional)
+        DownloadDeps(dat, dat, extensions)
     elif args.build:
         BuildPkg(dat, args.build, extensions)
     else:
