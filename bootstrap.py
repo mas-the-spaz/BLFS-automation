@@ -6,7 +6,7 @@ import warnings
 
 warnings.filterwarnings("ignore")  # suppress ssl cert warnings
 
-# Todo:
+# to-do
 # add md5 hash check
 # Notes: add requirements.txt, add README.md
 

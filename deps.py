@@ -47,8 +47,7 @@ def FtpUrlCheck(UrlsList):  # removes ftp links from url list, but only if they 
     while i < len(UrlsList):
         if (i % 2) == 0:
             NewList.append(UrlsList[i])
-        elif not 'ftp://' in UrlsList[i]:
-            print(UrlsList[i])
+        elif not "ftp://" in UrlsList[i]:
             NewList.append(UrlsList[i])
         i += 1
     return NewList
@@ -59,7 +58,7 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
-    for command in dat[pkg]['Commands']: 
+    for command in dat[pkg]['Commands']:
         CommandsList.append(command)
     return CommandsList
 
@@ -75,12 +74,12 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
     if zipfile.is_zipfile(os.path.basename(FileToExtract)):
         with zipfile.ZipFile(os.path.basename(FileToExtract), "r") as zip_ref:
             zip_ref.extractall()
-            os.chdir(tar_ref.getnames()[0])
+            os.chdir('zip_ref.getinfo()')  # get zip default name
 
     commands = ListCommands(dat, pkg)
     for command in commands:
-        print(command)
-    # for each command, pipe into bash
+        m = command.split(' ')  # need to split command with all flags and pass list into subprocess module
+        subprocess.run(m, capture_output=True)
 
 
 def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or some dependencies)
@@ -94,19 +93,21 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                         if not os.path.isfile(os.path.basename(url)):
                             print('\nDownloading: {0}\n'.format(url))
                             wget.download(url, os.path.basename(url))
+                            # try to download - else get wget error and pipe to stdout
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
 
 
 def DepsList(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
+    __types = []
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
     else:
-        __types = ['required']
+        __types.append('required')
     if rec:
         __types.append('recommended')
-    elif opt: 
+    elif opt:
         __types.extend(['recommended', 'optional'])
     return GetChild(dat, [pkg], __types)
 
