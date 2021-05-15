@@ -9,8 +9,9 @@ import subprocess
 ''''
 Todo:
 1) basic autocomplete checker (maybe just for version number)
-9) rename repo to 'BLFS-automation-script'
-10) add comments
+2) rename repo to 'BLFS-automation-script'
+3) rename variables
+4) fix pip wget module installation 
 '''
 
 default_download_path = '/blfs_sources/'
@@ -20,7 +21,15 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "no dependencies found for ", "Download directory not found - creating one.",
             "Creation of download directory failed!", "Successfully created directory.",
             "Found existing download directory. Proceeding...", "Install packages in this order:",
-            "Downloaded file could not be decompressed!"]
+            "Downloaded file could not be decompressed!",
+            "A simple script to list, download, and install any valid BLFS package along with any dependencies. " 
+            "(Input is cAsE sEnsItIvE)",
+            "Downloads ALL BLFS packages - uses a lot of time and space", "Install a given Package on the system",
+            "List installation (without installing) commands for a given package.",
+            "Downloads a given BLFS package along with all of its dependencies",
+            "Lists all of the dependencies for a given BLFS package in order of installation",
+            "Also list/download optional packages.",
+            "Also list/download recommended packages"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -78,8 +87,8 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
 
     commands = ListCommands(dat, pkg)
     for command in commands:
-        m = command.split(' ')  # need to split command with all flags and pass list into subprocess module
-        subprocess.run(m, capture_output=True)
+        cmdList = command.split(' ')  # need to split command with all flags and pass list into subprocess module
+        subprocess.run(cmdList, capture_output=True)
 
 
 def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or some dependencies)
@@ -93,7 +102,6 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                         if not os.path.isfile(os.path.basename(url)):
                             print('\nDownloading: {0}\n'.format(url))
                             wget.download(url, os.path.basename(url))
-                            # try to download - else get wget error and pipe to stdout
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
 
@@ -132,20 +140,15 @@ def Output(lst, reverse):  # outputs thing to stdout
 
 
 def parserFunction(dat):  # main parser function
-    parser = argparse.ArgumentParser(description='This script takes a valid BLFS package as an input and either lists '
-                                                 'the dependencies, or downloads the necessary packages. (Input is '
-                                                 'cAsE sEnsItIvE)',
+    parser = argparse.ArgumentParser(description=messages[8],
                                      prog='deps.py')
-    parser.add_argument('-a', '--all', help='Will download ALL packages. Uses a lot of time and '
-                                            'space', action='store_true')
-    parser.add_argument('-b', '--build', help='Install a given Package', metavar='PACKAGE', default=False)
-    parser.add_argument('-c', '--commands', metavar='PACKAGE', help='List installation (without installing) commands '
-                                                                    'for a given package.', default=False)
-    parser.add_argument('-d', '--download', help='Download given BLFS package', metavar='PACKAGE')
-    parser.add_argument('-l', '--list', metavar='PACKAGE', help='List dependencies instead of downloading.',
-                        default=False)
-    parser.add_argument('-o', '--optional', help='Allow installation of optional packages.', action='store_true')
-    parser.add_argument('-r', '--recommended', help='Allow installation of recommended packages.', action='store_true')
+    parser.add_argument('-a', '--all', help=messages[9], action='store_true')
+    parser.add_argument('-b', '--build', help=messages[10], metavar='PACKAGE', default=False)
+    parser.add_argument('-c', '--commands', metavar='PACKAGE', help=messages[11], default=False)
+    parser.add_argument('-d', '--download', help=messages[12], metavar='PACKAGE')
+    parser.add_argument('-l', '--list', metavar='PACKAGE', help=messages[13], default=False)
+    parser.add_argument('-o', '--optional', help=messages[14], action='store_true')
+    parser.add_argument('-r', '--recommended', help=messages[15], action='store_true')
     args = parser.parse_args()
 
     if args.download:
