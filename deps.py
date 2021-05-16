@@ -11,7 +11,6 @@ import subprocess
 ''''
 Todo:
 2) rename repo to 'BLFS-automation'
-4) fix pip wget module installation 
 5) testing...
 '''
 
