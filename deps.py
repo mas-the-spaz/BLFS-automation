@@ -89,9 +89,8 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
     commands = ListCommands(dat, pkg)
     print(os.getcwd())
     for command in commands:
-        cmdList = shlex.split(command)
-        print(cmdList)
-        subprocess.Popen(cmdList, shell=True)
+        #cmdList = shlex.split(command)
+        subprocess.Popen(['/bin/sh', '-c', command])
 
 
 def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or some dependencies)
