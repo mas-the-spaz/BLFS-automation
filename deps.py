@@ -5,14 +5,14 @@ import wget
 import tarfile
 import zipfile
 import subprocess
-import shlex
 
 ''''
 Todo:
-1) basic autocomplete checker (maybe just for version number)
-2) rename repo to 'BLFS-automation-script'
-3) rename variables
+1) check if "r+" is needed or just "r"
+2) rename repo to 'BLFS-automation'
+3) get .zip library name of directory
 4) fix pip wget module installation 
+5) testing...
 '''
 
 default_download_path = '/blfs_sources/'
@@ -51,7 +51,7 @@ def CheckDir():  # download directory housekeeping function
     return
 
 
-def FtpUrlCheck(UrlsList):  # removes ftp links from url list, but only if they ar duplicates
+def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they ar duplicates
     NewList = []
     i = 0
     while i < len(UrlsList):
@@ -87,18 +87,15 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
             os.chdir('zip_ref.getinfo()')  # get zip default name
 
     commands = ListCommands(dat, pkg)
-    print(os.getcwd())
     for command in commands:
-        #cmdList = shlex.split(command)
-        subprocess.Popen(['/bin/sh', '-c', command])
+        subprocess.Popen(['/bin/sh', '-c', command])  # output command to shell
 
 
-def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or some dependencies)
+def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or just some dependencies)
     CheckDir()
     for package in dlList:
         if package in dat:
-            NonFtp = FtpUrlCheck(dat[package]['url'])
-            for url in NonFtp:
+            for url in FtpUrlFilter(dat[package]['url']):
                 for i in exts:
                     if i in url:
                         if not os.path.isfile(os.path.basename(url)):
@@ -108,7 +105,7 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                             print('{} already has been downloaded'.format(os.path.basename(url)))
 
 
-def DepsList(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
+def ListDeps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
     __types = []
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
@@ -132,7 +129,7 @@ def GetChild(dat, PkgList, types):  # recursively lists all dependencies for a g
     return PkgList
 
 
-def Output(lst, reverse):  # outputs the "thing" to stdout
+def Output(lst, reverse):  # output function
     if reverse:
         print(messages[6])
         lst.reverse()
@@ -142,7 +139,7 @@ def Output(lst, reverse):  # outputs the "thing" to stdout
         print(thing)
 
 
-def parserFunction(dat):  # main parser function
+def ParserFunction(dat):  # main parser function
     parser = argparse.ArgumentParser(description=messages[8], prog='deps.py')
     parser.add_argument('-a', '--all', help=messages[9], action='store_true')
     parser.add_argument('-b', '--build', help=messages[10], metavar='PACKAGE', default=False)
@@ -154,9 +151,9 @@ def parserFunction(dat):  # main parser function
     args = parser.parse_args()
 
     if args.download:
-        DownloadDeps(dat, DepsList(dat, args.download, args.recommended, args.optional), extensions)
+        DownloadDeps(dat, ListDeps(dat, args.download, args.recommended, args.optional), extensions)
     elif args.list:
-        Output(DepsList(dat, args.list, args.recommended, args.optional), True)
+        Output(ListDeps(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
         Output(ListCommands(dat, args.commands), False)
     elif args.all:
@@ -174,4 +171,4 @@ if not os.path.exists('dependencies.json'):
 with open('dependencies.json', 'r+') as scheme:
     data = json.load(scheme)
 
-parserFunction(data)
+ParserFunction(data)
