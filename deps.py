@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import json
 import os
@@ -8,9 +10,7 @@ import subprocess
 
 ''''
 Todo:
-1) check if "r+" is needed or just "r"
 2) rename repo to 'BLFS-automation'
-3) get .zip library name of directory
 4) fix pip wget module installation 
 5) testing...
 '''
@@ -57,7 +57,7 @@ def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they
     while i < len(UrlsList):
         if (i % 2) == 0:
             NewList.append(UrlsList[i])
-        elif not "ftp://" in UrlsList[i]:
+        elif not 'ftp://' in UrlsList[i]:
             NewList.append(UrlsList[i])
         i += 1
     return NewList
@@ -77,14 +77,15 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
     DownloadDeps(dat, [pkg], exts)
     FileToExtract = dat[pkg]['url'][0]
     if tarfile.is_tarfile(os.path.basename(FileToExtract)):
-        with tarfile.open(os.path.basename(FileToExtract), "r") as tar_ref:
+        with tarfile.open(os.path.basename(FileToExtract), 'r') as tar_ref:
             tar_ref.extractall()
             os.chdir(tar_ref.getnames()[0])
 
     if zipfile.is_zipfile(os.path.basename(FileToExtract)):
-        with zipfile.ZipFile(os.path.basename(FileToExtract), "r") as zip_ref:
-            zip_ref.extractall()
-            os.chdir('zip_ref.getinfo()')  # get zip default name
+        with zipfile.ZipFile(os.path.basename(FileToExtract), 'r') as zip_ref:
+            print(os.path.splitext(os.path.basename(FileToExtract))[0])
+            zip_ref.extractall(os.path.splitext(os.path.basename(FileToExtract))[0])
+            os.chdir(os.path.splitext(os.path.basename(FileToExtract))[0])
 
     commands = ListCommands(dat, pkg)
     for command in commands:
@@ -168,7 +169,7 @@ if not os.path.exists('dependencies.json'):
     print(messages[0])
     exit()
 
-with open('dependencies.json', 'r+') as scheme:
+with open('dependencies.json', 'r') as scheme:
     data = json.load(scheme)
 
 ParserFunction(data)
