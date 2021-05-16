@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import wget
 import argparse
 import json
 import os
-import wget
 import tarfile
 import zipfile
 import subprocess
