@@ -5,6 +5,7 @@ import wget
 import tarfile
 import zipfile
 import subprocess
+import shlex
 
 ''''
 Todo:
@@ -22,7 +23,7 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Creation of download directory failed!", "Successfully created directory.",
             "Found existing download directory. Proceeding...", "Install packages in this order:",
             "Downloaded file could not be decompressed!",
-            "A simple script to list, download, and install any valid BLFS package along with any dependencies. " 
+            "A simple script to list, download, and install any valid BLFS package along with any dependencies. "
             "(Input is cAsE sEnsItIvE)",
             "Downloads ALL BLFS packages - uses a lot of time and space", "Install a given Package on the system",
             "List installation (without installing) commands for a given package.",
@@ -86,9 +87,11 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
             os.chdir('zip_ref.getinfo()')  # get zip default name
 
     commands = ListCommands(dat, pkg)
+    print(os.getcwd())
     for command in commands:
-        cmdList = command.split(' ')  # need to split command with all flags and pass list into subprocess module
-        subprocess.run(cmdList, capture_output=True)
+        cmdList = shlex.split(command)
+        print(cmdList)
+        subprocess.Popen(cmdList, shell=True)
 
 
 def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or some dependencies)
@@ -130,8 +133,9 @@ def GetChild(dat, PkgList, types):  # recursively lists all dependencies for a g
     return PkgList
 
 
-def Output(lst, reverse):  # outputs thing to stdout
+def Output(lst, reverse):  # outputs the "thing" to stdout
     if reverse:
+        print(messages[6])
         lst.reverse()
     else:
         pass
@@ -140,8 +144,7 @@ def Output(lst, reverse):  # outputs thing to stdout
 
 
 def parserFunction(dat):  # main parser function
-    parser = argparse.ArgumentParser(description=messages[8],
-                                     prog='deps.py')
+    parser = argparse.ArgumentParser(description=messages[8], prog='deps.py')
     parser.add_argument('-a', '--all', help=messages[9], action='store_true')
     parser.add_argument('-b', '--build', help=messages[10], metavar='PACKAGE', default=False)
     parser.add_argument('-c', '--commands', metavar='PACKAGE', help=messages[11], default=False)
@@ -154,7 +157,6 @@ def parserFunction(dat):  # main parser function
     if args.download:
         DownloadDeps(dat, DepsList(dat, args.download, args.recommended, args.optional), extensions)
     elif args.list:
-        print(messages[6])
         Output(DepsList(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
         Output(ListCommands(dat, args.commands), False)
