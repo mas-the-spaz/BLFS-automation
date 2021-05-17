@@ -9,7 +9,7 @@ BLFS packages often require many other dependencies to work, and sometimes it is
 <br><br>
 This project contains two scripts: The first, ```bootstrap.py``` will build a local database containing all the dependencies, the urls, and the installation commands.
 
-The second script ```deps.py```, will parse through the database, and depending on the options, will either list the dependencies, download all the dependencies, download **all** packages (uses a lot of time and space), list installation commands ofr a given package, or install the given package on the BLFS system.
+The second script ```deps.py```, will parse through the database, and depending on the options, will either list the dependencies, download all the dependencies, download **all** packages (uses a lot of time and space), list installation commands for a given package, or install the given package on the BLFS system.
 
      
 
