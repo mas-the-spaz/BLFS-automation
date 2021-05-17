@@ -8,12 +8,6 @@ import tarfile
 import zipfile
 import subprocess
 
-''''
-Todo:
-2) rename repo to 'BLFS-automation'
-5) testing...
-'''
-
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
