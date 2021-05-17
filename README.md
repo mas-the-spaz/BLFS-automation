@@ -20,6 +20,7 @@ To get a local copy up and running follow these steps.
 ### Prerequisites:
 <ul>
     <li>A working LFS system (check them out at https://www.linuxfromscratch.org/)</li>
+    <li>A intermet connection - you may need to install a couple of BLFS packages like NetworkManager, DHCPClient, and WPA-supplicant.</li>
     <li>A working Python environment</li>
     <li>Python package manager (Pip)</li>
     <li>Git (https://www.linuxfromscratch.org/blfs/view/svn/general/git.html)</li>
