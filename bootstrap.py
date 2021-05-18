@@ -9,14 +9,6 @@ import warnings
 warnings.filterwarnings("ignore")  # suppress ssl cert warnings
 
 '''
-Todo
-add md5 hash check? scrape md5 hash...
-add README.md and fix requirements.txt
-remove all whitespace from commands
-re.sub does not work with raw string format?
-'''
-
-'''
 JSON scheme
 {
 'Package Name': {                                         ---string
@@ -33,6 +25,7 @@ JSON scheme
 '''
 
 baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
+# baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/longindex.html' # uncomment this line if you are using the Systemd BLFS build.
 
 links = []
 scheme = {}
