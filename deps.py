@@ -82,7 +82,7 @@ def BuildPkg(dat, pkg):  # install a given BLFS package on the system
 
     commands = ListCommands(dat, pkg)
     for command in commands:
-        install = input('Should I run {}? <y/n>\n'.format(command))
+        install = input('Should I run "{}"? <y/n>\n'.format(command))
         if install.lower() == 'y':
             subprocess.Popen(['/bin/sh', '-c', command])  # output command to shell
         else:
