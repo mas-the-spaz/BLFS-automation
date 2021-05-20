@@ -36,6 +36,21 @@ def StripText(string):
     return re.sub(r'\n\s+', ' ', string)
 
 
+def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they are duplicates
+    NewList = []
+    i = 0
+    while i < len(UrlsList):
+        if 'texlive' in UrlsList[i]:  # the texlive package only contains ftp urls
+            return UrlsList
+        if (i % 2) == 0:
+            NewList.append(UrlsList[i])
+        elif not 'ftp://' in UrlsList[i]:
+            NewList.append(UrlsList[i])
+        i += 1
+    return NewList
+
+
+
 def packageCollect(package, tagClass, tag):
     name = StripText(package.find(tag, class_=tagClass).text).strip()  # string of name
 
@@ -47,7 +62,7 @@ def packageCollect(package, tagClass, tag):
 
             for e in d.find_all('a', class_='ulink'):  # grab external deps
                 deps[c].append(StripText(e.text))
-                scheme[StripText(e.text)] = {'name': name, 'url': [e['href']], "Dependencies": {
+                scheme[StripText(e.text)] = {'name': StripText(e.text), 'url': [e['href']], "Dependencies": {
                     "required": [],
                     "recommended": [],
                     "optional": []
@@ -59,13 +74,17 @@ def packageCollect(package, tagClass, tag):
         commands.append(re.sub("\s+", " ", re.sub("\s+\\\\\\n\s+", ' ', d.text).replace('\n', ' ')))
 
     urls = []
-    if package.find('div', class_='itemizedlist'):
+    hashes = []
+    if package.find('div', class_='itemizedlist'):  # if package has urls add to array
         for d in package.find_all('div', class_='itemizedlist'):
-            for e in d.find_all('a', class_='ulink'):  # if package has urls add to array
+            for e in d.find_all('a', class_='ulink'):  
                 urls.append(e['href'])
-
+            for f in d.find_all('p'):
+                if 'Download MD5 sum:' in f.getText():  # this is very messy code???
+                    hashes.extend(f.getText().split()[-1:])
+    
     print("Downloading info for {0}".format(name))
-    scheme[name] = {'name': name, 'url': urls, 'Dependencies': deps, 'Commands': commands}
+    scheme[name] = {'name': name, 'url': FtpUrlFilter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes}
 
 
 res = requests.get(baseUrl, verify=False)  # Begin...

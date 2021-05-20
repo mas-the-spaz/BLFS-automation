@@ -52,6 +52,8 @@ Note: once again it is *highly* recommended that you run this as ```root```!
 
 Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-l PACKAGE] [-o] [-r]```
 
+Note: When using the -b (build) option, it is recommended to follow along the installation process in the BLFS book. This is because the -b (build) option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). 
+
 ```
 optional arguments:
   -a, --all             Downloads ALL BLFS packages - uses a lot of time and space
@@ -78,11 +80,7 @@ optional arguments:
   -r, --recommended     Also list/download recommended packages
   ```
 
-## Todo:
-<ul>
-<li>Add MD5 hash check and verification</li>
-<li>Fix SSL problems (is there a way to do local certificate stuff?)</li>
-</ul>
+Contributers: Ahron Maslin, Josh W. (moral support)
 
 
 

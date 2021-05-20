@@ -6,6 +6,7 @@ import json
 import os
 import tarfile
 import zipfile
+import hashlib
 import subprocess
 
 default_download_path = '/blfs_sources/'
@@ -23,7 +24,7 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Downloads a given BLFS package along with all of its dependencies",
             "Lists all of the dependencies for a given BLFS package in order of installation",
             "Also list/download optional packages.",
-            "Also list/download recommended packages"]
+            "Also list/download recommended packages", "Downloaded file does not match the MD5 hash!"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -44,16 +45,12 @@ def CheckDir():  # download directory housekeeping function
     return
 
 
-def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they ar duplicates
-    NewList = []
-    i = 0
-    while i < len(UrlsList):
-        if (i % 2) == 0:
-            NewList.append(UrlsList[i])
-        elif not 'ftp://' in UrlsList[i]:
-            NewList.append(UrlsList[i])
-        i += 1
-    return NewList
+def md5Check(hash, file):
+    fileHash = hashlib.md5(open(file,'rb').read()).hexdigest()
+    if hash != fileHash:
+        print(messages[16])
+        os.remove(file)
+        exit
 
 
 def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
@@ -94,12 +91,14 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
     CheckDir()
     for package in dlList:
         if package in dat:
-            for url in FtpUrlFilter(dat[package]['url']):
+            for index, url in enumerate(dat[package]['url']):
                 for i in exts:
                     if i in url:
                         if not os.path.isfile(os.path.basename(url)):
                             print('\nDownloading: {0}\n'.format(url))
                             wget.download(url, os.path.basename(url))
+                            if index > len(dat[package]['Hashes']):
+                                md5Check(dat[package]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
 
