@@ -66,8 +66,8 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     return CommandsList
 
 
-def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
-    DownloadDeps(dat, [pkg], exts)
+def BuildPkg(dat, pkg):  # install a given BLFS package on the system
+    DownloadDeps(dat, [pkg], extensions)
     FileToExtract = dat[pkg]['url'][0]
     if tarfile.is_tarfile(os.path.basename(FileToExtract)):
         with tarfile.open(os.path.basename(FileToExtract), 'r') as tar_ref:
@@ -82,7 +82,11 @@ def BuildPkg(dat, pkg, exts):  # install a given BLFS package on the system
 
     commands = ListCommands(dat, pkg)
     for command in commands:
-        subprocess.Popen(['/bin/sh', '-c', command])  # output command to shell
+        install = input('Should I run {}? <y/n>\n'.format(command))
+        if install.lower() == 'y':
+            subprocess.Popen(['/bin/sh', '-c', command])  # output command to shell
+        else:
+            pass
 
 
 def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or just some dependencies)
@@ -153,7 +157,7 @@ def ParserFunction(dat):  # main parser function
     elif args.all:
         DownloadDeps(dat, dat, extensions)
     elif args.build:
-        BuildPkg(dat, args.build, extensions)
+        BuildPkg(dat, args.build)
     else:
         parser.print_help()
 
@@ -165,4 +169,5 @@ if not os.path.exists('dependencies.json'):
 with open('dependencies.json', 'r') as scheme:
     data = json.load(scheme)
 
-ParserFunction(data)
+#ParserFunction(data)
+BuildPkg(data, 'alsa-plugins-1.2.2')
