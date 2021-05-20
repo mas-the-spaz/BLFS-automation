@@ -29,7 +29,7 @@ To get a local copy up and running follow these steps.
 ### Installation:
 1. Clone this repository:
 ```
-git clone https://github.com/mas-the-spaz/python-blfs.git
+git clone https://github.com/ahron-maslin/BLFS-automation.git 
 ```
 
 2. Install the requirements:
