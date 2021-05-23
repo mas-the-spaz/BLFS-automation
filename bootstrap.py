@@ -13,13 +13,15 @@ JSON scheme
 {
 'Package Name': {                                         ---string
         'Version': '1.0.0',                               ---string
-        'URL': ['http://asdfasdfasdf','http://.patch],    ---array (includes patches urls)
+        'URL': ['http://asdfasdfasdf','http://.patch],    ---list (includes patches urls)
         'Deps': {                                         ---dict 
-            'Required': ['first', 'second'],              ---array 
-            'Recommended': ['first', 'second'],           ---array 
-            'Optional': ['first', 'second']               ---array 
+            'Required': ['first', 'second'],              ---list 
+            'Recommended': ['first', 'second'],           ---list 
+            'Optional': ['first', 'second']               ---list 
             }, 
-        'Commands': ['Installation commands']             ---array
+        'Commands': ['Installation commands'],            ---list
+        'Hashes': ['9801095c42bba12edebd1902bcf0a990'],   ---list
+        'Kconf': ['kernel configuration settings']        ---list
         }
 }
 '''
@@ -73,6 +75,13 @@ def packageCollect(package, tagClass, tag):
     for d in package.find_all('kbd', class_='command'):  # remove whitespace
         commands.append(re.sub("\s+", " ", re.sub("\s+\\\\\\n\s+", ' ', d.text).replace('\n', ' ')))
 
+    kconf = []
+    if package.find('div', class_='kernel'):
+        for g in package.find_all('div', class_='kernel'):
+            for h in g.find_all('pre', class_='screen'):
+                kconf.extend(h.find('code', class_='literal'))
+
+
     urls = []
     hashes = []
     if package.find('div', class_='itemizedlist'):  # if package has urls add to array
@@ -80,18 +89,18 @@ def packageCollect(package, tagClass, tag):
             for e in d.find_all('a', class_='ulink'):  
                 urls.append(e['href'])
             for f in d.find_all('p'):
-                if 'Download MD5 sum:' in f.getText():  # this is very messy code???
+                if 'Download MD5 sum:' in f.getText(): 
                     hashes.extend(f.getText().split()[-1:])
     
     print("Downloading info for {0}".format(name))
-    scheme[name] = {'name': name, 'url': FtpUrlFilter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes}
+    scheme[name] = {'name': name, 'url': FtpUrlFilter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf}
 
 
 res = requests.get(baseUrl, verify=False)  # Begin...
 soup = Bs4(res.text, 'html.parser')
 el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
 print("Collecting base URLs....")
-for i in el.find_all('a', href=True):  # for every url... check if has hashtag... if not add to array
+for i in el.find_all('a', href=True):  # for every url... check if has href... if not add to array
     if not '#' in i['href']:
         links.append('https://www.linuxfromscratch.org/blfs/view/stable/' + i['href'])
 

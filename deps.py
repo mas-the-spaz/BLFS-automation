@@ -24,7 +24,8 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Downloads a given BLFS package along with all of its dependencies",
             "Lists all of the dependencies for a given BLFS package in order of installation",
             "Also list/download optional packages.",
-            "Also list/download recommended packages", "Downloaded file does not match the MD5 hash!"]
+            "Also list/download recommended packages", "Downloaded file does not match the MD5 hash!",
+            "This package requires some kernel configuration before installation.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -45,7 +46,7 @@ def CheckDir():  # download directory housekeeping function
     return
 
 
-def md5Check(hash, file):
+def md5Check(hash, file):  # verify file hash
     fileHash = hashlib.md5(open(file,'rb').read()).hexdigest()
     if hash != fileHash:
         print(messages[16])
@@ -58,6 +59,12 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
+    if dat[pkg]['kconf']:
+        print(messages[17])
+        for conf in dat[pkg]['kconf']:
+            print('{}\n'.format(conf))
+
+    print('Listing commands for {}\n'.format(pkg))
     for command in dat[pkg]['Commands']:
         CommandsList.append(command)
     return CommandsList
@@ -141,9 +148,9 @@ def ParserFunction(dat):  # main parser function
     parser = argparse.ArgumentParser(description=messages[8], prog='deps.py')
     parser.add_argument('-a', '--all', help=messages[9], action='store_true')
     parser.add_argument('-b', '--build', help=messages[10], metavar='PACKAGE', default=False)
-    parser.add_argument('-c', '--commands', metavar='PACKAGE', help=messages[11], default=False)
+    parser.add_argument('-c', '--commands', help=messages[11], metavar='PACKAGE', default=False)
     parser.add_argument('-d', '--download', help=messages[12], metavar='PACKAGE')
-    parser.add_argument('-l', '--list', metavar='PACKAGE', help=messages[13], default=False)
+    parser.add_argument('-l', '--list', help=messages[13], metavar='PACKAGE', default=False)
     parser.add_argument('-o', '--optional', help=messages[14], action='store_true')
     parser.add_argument('-r', '--recommended', help=messages[15], action='store_true')
     args = parser.parse_args()
