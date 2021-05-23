@@ -52,7 +52,7 @@ Note: once again it is *highly* recommended that you run this as ```root```!
 
 Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-l PACKAGE] [-o] [-r]```
 
-Note: When using the -b (build) option, it is recommended to follow along the installation process in the BLFS book. This is because the -b (build) option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). 
+Note: When using the -b (build) option, it is recommended to follow along the installation process in the BLFS book. This is because the -b (build) option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Additionally, some packages require further kernel configuration, as a prerequisite for installation 
 
 ```
 optional arguments:
