@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util import Retry
 from bs4 import BeautifulSoup as Bs4
 import json
 import re
@@ -32,10 +34,24 @@ baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # 
 links = []
 scheme = {}
 PkgCount = 0
+headers = {
+    'User-Agent':'Mozilla/5.0 (Windows NT x.y; rv:10.0) Gecko/20100101 Firefox/10.0'
+}
 
 
 def StripText(string):
     return re.sub(r'\n\s+', ' ', string)
+
+def UrlGet(url):
+    s = requests.Session()
+
+    retries = Retry(total=5,
+                    backoff_factor=0.1,
+                    status_forcelist=[ 500, 502, 503, 504 ])
+
+    s.mount('http://', HTTPAdapter(max_retries=retries))
+    s.mount('https://', HTTPAdapter(max_retries=retries))
+    return s.get(url.rstrip(), verify=False, headers=headers, timeout=30)
 
 
 def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they are duplicates
@@ -69,7 +85,6 @@ def packageCollect(package, tagClass, tag):
                     "recommended": [],
                     "optional": []
                 }, 'Commands': []}  # manually add url to scheme
-        # improve above code to save space?
 
     commands = []
     for d in package.find_all('kbd', class_='command'):  # remove whitespace
@@ -99,7 +114,7 @@ def packageCollect(package, tagClass, tag):
     scheme[name] = {'name': name, 'url': FtpUrlFilter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf}
 
 
-res = requests.get(baseUrl, verify=False)  # Begin...
+res = UrlGet(baseUrl)  # Begin...
 soup = Bs4(res.text, 'html.parser')
 el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
 print("Collecting base URLs....")
@@ -110,7 +125,13 @@ for i in el.find_all('a', href=True):  # for every url... check if has href... i
 
 for a in links:
     PkgCount += 1
-    res = requests.get(a.rstrip(), verify=False)
+    try:
+        res = UrlGet(a)
+    except requests.ConnectionError as e:
+        print("OOPS!! Connection Error. Make sure you are connected to Internet. Technical Details given below.\n")
+        print(str(e))  
+        continue
+
     soup = Bs4(res.text, 'html.parser')  # get webpage contents
 
     if len(soup.find_all('div', class_='sect2')) > 1:  # if soup is module instead of std package
