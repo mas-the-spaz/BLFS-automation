@@ -113,9 +113,6 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                                 md5Check(dat[package]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
-                else:
-                    print('"{0}" {1} {2}'.format(package, messages[18], dat[package]['url'][0]))
-                    exit()
         else:
             print('{0} "{1}"'.format(messages[1], package))
 
