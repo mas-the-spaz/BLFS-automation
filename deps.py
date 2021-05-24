@@ -8,25 +8,26 @@ import tarfile
 import zipfile
 import hashlib
 import subprocess
+import re
 
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
-messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database\n",
+messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
             "no dependencies found for \n", "Download directory not found - creating one.\n",
             "Creation of download directory failed!\n", "Successfully created directory.\n",
             "Found existing download directory. Proceeding...", "Install packages in this order:\n",
             "Downloaded file could not be decompressed!\n",
             "A simple script to list, download, and install any valid BLFS package along with any dependencies.\n"
-            "(Input is cAsE sEnsItIvE)\n",
-            "Downloads ALL BLFS packages - uses a lot of time and space\n", "Install a given Package on the system\n",
+            "(Input is cAsE sEnsItIvE).\n",
+            "Downloads ALL BLFS packages - uses a lot of time and space.\n", "Install a given Package on the system.\n",
             "List installation (without installing) commands for a given package.\n",
-            "Downloads a given BLFS package along with all of its dependencies\n",
-            "Lists all of the dependencies for a given BLFS package in order of installation\n",
+            "Downloads a given BLFS package along with all of its dependencies.\n",
+            "Lists all of the dependencies for a given BLFS package in order of installation.\n",
             "Also list/download optional packages.\n",
-            "Also list/download recommended packages\n", "Downloaded file does not match the MD5 hash!\n",
+            "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
             "This package requires some kernel configuration before installation.\n", 
-            "is not a BLFS package, you can download it at"]
+            "is not a BLFS package, you can download it at", "Downloads and installs the given packages with all of it's dependencies.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -47,12 +48,26 @@ def CheckDir():  # download directory housekeeping function
     return
 
 
+def cdFix(cmd):
+    for i, w in enumerate(cmd):
+        print(w)
+        if w == 'cd':
+            return cmd[i+1]
+    return ''
+
+
 def md5Check(hash, file):  # verify file hash
     fileHash = hashlib.md5(open(file,'rb').read()).hexdigest()
     if hash != fileHash:
         print(messages[16])
         os.remove(file)
         exit
+
+
+def everything(dat, pkg, rec=None, opt=None):
+    pkgList = ListDeps(dat, pkg, rec, opt).reverse()
+    for item in pkgList:
+        BuildPkg(dat, item)
 
 
 def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
@@ -71,7 +86,7 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     return CommandsList
 
 
-def BuildPkg(dat, pkg, rec=None, opt=None):  # install a given BLFS package on the system
+def BuildPkg(dat, pkg):  # install a given BLFS package on the system
     DownloadDeps(dat, [pkg], extensions)
     FileToExtract = dat[pkg]['url'][0]
     if tarfile.is_tarfile(os.path.basename(FileToExtract)):
@@ -91,6 +106,7 @@ def BuildPkg(dat, pkg, rec=None, opt=None):  # install a given BLFS package on t
         if install.lower() == 'y':
             print('running {}'.format(command))
             subprocess.call(['/bin/sh', '-c', command])  # output command to shell
+            os.chdir(os.getcwd() + '/' + cdFix(re.sub('\s+', ' ', command).split()))
         else:
             pass
 
@@ -158,6 +174,7 @@ def ParserFunction(dat):  # main parser function
     parser.add_argument('-b', '--build', help=messages[10], metavar='PACKAGE', default=False)
     parser.add_argument('-c', '--commands', help=messages[11], metavar='PACKAGE', default=False)
     parser.add_argument('-d', '--download', help=messages[12], metavar='PACKAGE')
+    parser.add_argument('-e', '--everything', help=messages[19], metavar='PACKAGE')
     parser.add_argument('-l', '--list', help=messages[13], metavar='PACKAGE', default=False)
     parser.add_argument('-o', '--optional', help=messages[14], action='store_true')
     parser.add_argument('-r', '--recommended', help=messages[15], action='store_true')
@@ -165,6 +182,8 @@ def ParserFunction(dat):  # main parser function
 
     if args.download:
         DownloadDeps(dat, ListDeps(dat, args.download, args.recommended, args.optional), extensions)
+    elif args.everything:
+        everything(dat, args.everything, args.recommended, args.optional)
     elif args.list:
         Output(ListDeps(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
@@ -172,7 +191,7 @@ def ParserFunction(dat):  # main parser function
     elif args.all:
         DownloadDeps(dat, dat, extensions)
     elif args.build:
-        BuildPkg(dat, args.build, args.recommended, args.optional)
+        BuildPkg(dat, args.build)
     else:
         parser.print_help()
 
