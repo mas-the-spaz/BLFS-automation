@@ -88,10 +88,11 @@ def packageCollect(package, tagClass, tag):
 
     commands = []
     for d in package.find_all('kbd', class_='command'):  # remove whitespace
-        if 'EOF' in d.text:  # fixes Heredoc bug
-            commands.append(d.text)
-        else:
-            commands.append(re.sub("\s+", " ", re.sub("\s+\\\\\\n\s+", ' ', d.text).replace('\n', ' ')))
+        commands.append(d.text)
+        #if 'EOF' in d.text:  # fixes Heredoc bug
+        #    commands.append(d.text)
+        #else:
+        #    commands.append(re.sub("\s+", " ", re.sub("\s+\\\\\\n\s+", ' ', d.text).replace('\n', ' ')))
 
     kconf = []
     if package.find('div', class_='kernel'):

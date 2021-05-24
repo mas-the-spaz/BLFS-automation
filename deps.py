@@ -12,20 +12,21 @@ import subprocess
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
-messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database",
-            "no dependencies found for ", "Download directory not found - creating one.",
-            "Creation of download directory failed!", "Successfully created directory.",
-            "Found existing download directory. Proceeding...", "Install packages in this order:",
-            "Downloaded file could not be decompressed!",
-            "A simple script to list, download, and install any valid BLFS package along with any dependencies. "
-            "(Input is cAsE sEnsItIvE)",
-            "Downloads ALL BLFS packages - uses a lot of time and space", "Install a given Package on the system",
-            "List installation (without installing) commands for a given package.",
-            "Downloads a given BLFS package along with all of its dependencies",
-            "Lists all of the dependencies for a given BLFS package in order of installation",
-            "Also list/download optional packages.",
-            "Also list/download recommended packages", "Downloaded file does not match the MD5 hash!",
-            "This package requires some kernel configuration before installation.\n"]
+messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database\n",
+            "no dependencies found for \n", "Download directory not found - creating one.\n",
+            "Creation of download directory failed!\n", "Successfully created directory.\n",
+            "Found existing download directory. Proceeding...", "Install packages in this order:\n",
+            "Downloaded file could not be decompressed!\n",
+            "A simple script to list, download, and install any valid BLFS package along with any dependencies.\n"
+            "(Input is cAsE sEnsItIvE)\n",
+            "Downloads ALL BLFS packages - uses a lot of time and space\n", "Install a given Package on the system\n",
+            "List installation (without installing) commands for a given package.\n",
+            "Downloads a given BLFS package along with all of its dependencies\n",
+            "Lists all of the dependencies for a given BLFS package in order of installation\n",
+            "Also list/download optional packages.\n",
+            "Also list/download recommended packages\n", "Downloaded file does not match the MD5 hash!\n",
+            "This package requires some kernel configuration before installation.\n", 
+            "is not a BLFS package, you can download it at"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -86,10 +87,13 @@ def BuildPkg(dat, pkg):  # install a given BLFS package on the system
 
     commands = ListCommands(dat, pkg)
     for command in commands:
-        install = input('Should I run "{}"? <y/n>\n'.format(command))
+        install = input('Should I run "{}"? <y/n/i> (type "i" to inject command)\n'.format(command))
         if install.lower() == 'y':
             print('running {}'.format(command))
             subprocess.call(['/bin/sh', '-c', command])  # output command to shell
+        elif install.lower() == 'i':
+            inject = input("Command to input: ")
+            subprocess.call(['/bin/sh', '-c', inject])
         else:
             pass
 
@@ -109,6 +113,9 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                                 md5Check(dat[package]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
+                else:
+                    print('"{0}" {1} {2}'.format(package, messages[18], dat[package]['url'][0]))
+                    exit()
         else:
             print('{0} "{1}"'.format(messages[1], package))
 
