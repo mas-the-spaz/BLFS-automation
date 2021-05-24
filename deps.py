@@ -109,6 +109,8 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                                 md5Check(dat[package]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
+        else:
+            print('{0} "{1}"'.format(messages[1], package))
 
 
 def ListDeps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
