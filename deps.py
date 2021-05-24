@@ -104,6 +104,7 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                         if not os.path.isfile(os.path.basename(url)):
                             print('\nDownloading: {0}\n'.format(url))
                             wget.download(url, os.path.basename(url))
+                            print('\n')
                             if index > len(dat[package]['Hashes']):
                                 md5Check(dat[package]['Hashes'][index], os.path.basename(url))
                         else:
