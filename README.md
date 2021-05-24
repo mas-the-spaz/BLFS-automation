@@ -22,7 +22,7 @@ To get a local copy up and running follow these steps.
     <li>A working LFS system (check them out at https://www.linuxfromscratch.org/)</li>
     <li>A working internet connection - you may need to install a couple of BLFS packages like NetworkManager, DHCPClient, and WPA-supplicant.</li>
     <li>A working Python environment</li>
-    <li>Python package manager (Pip)</li>
+    <li>Python3 package manager (Pip)</li>
     <li>Git (https://www.linuxfromscratch.org/blfs/view/svn/general/git.html)</li>
 </ul>
 
@@ -39,12 +39,12 @@ sudo pip install -r requirements.txt
 Note: Installing the requirements, must be done as root - this fixes a bug where the ```wget``` module does not get imported.
 
 ## Usage:
-It is recommended that the main script (deps.py) should always be run as root, in order to prevent errors when installing packages to the system.
+It is recommended that the main script ```deps.py``` should always be run as root, in order to prevent errors when installing packages to the system.
 
-First build the latest BLFS package database by running ```# python bootstrap.py```.
+First build the latest BLFS package database by running ```# python3 bootstrap.py```.
 This will ensure that you have a database with the latest BLFS version.
 
-Alternatively, you can just use the included dependencies.json file. At the time of writing, the version is BLFS 10.1.
+Alternatively, you can just use the included ```dependencies.json``` file. At the time of writing, the version is BLFS 10.1.
 
  
 The main script ```deps.py```, has many options to list, download, list commands, or install a package.
@@ -52,7 +52,7 @@ Note: once again it is *highly* recommended that you run this as ```root```!
 
 Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-l PACKAGE] [-o] [-r]```
 
-Note: When using the -b (build) option, it is recommended to follow along the installation process in the BLFS book. This is because the -b (build) option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Additionally, some packages require further kernel configuration, as a prerequisite for installation 
+Note: When using the ```-b (build)``` option, it is recommended to follow along the installation process in the BLFS book. This is because the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Additionally, some packages require further kernel configuration, as a prerequisite for installation.
 
 ```
 optional arguments:
