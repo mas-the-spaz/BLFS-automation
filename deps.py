@@ -87,13 +87,10 @@ def BuildPkg(dat, pkg):  # install a given BLFS package on the system
 
     commands = ListCommands(dat, pkg)
     for command in commands:
-        install = input('Should I run "{}"? <y/n/i> (type "i" to inject command)\n'.format(command))
+        install = input('Should I run "{}"? <y/n>\n'.format(command))
         if install.lower() == 'y':
             print('running {}'.format(command))
             subprocess.call(['/bin/sh', '-c', command])  # output command to shell
-        elif install.lower() == 'i':
-            inject = input("Command to input: ")
-            subprocess.call(['/bin/sh', '-c', inject])
         else:
             pass
 
@@ -103,6 +100,9 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
     for package in dlList:
         if package in dat:
             for index, url in enumerate(dat[package]['url']):
+                if 'Hashes' not in dat[package]:
+                    print('"{0}" {1}{2}'.format(package, messages[18], dat[package]['url'][0]))
+                    exit()
                 for i in exts:
                     if i in url:
                         if not os.path.isfile(os.path.basename(url)):
@@ -113,6 +113,7 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                                 md5Check(dat[package]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
+                
         else:
             print('{0} "{1}"'.format(messages[1], package))
 
