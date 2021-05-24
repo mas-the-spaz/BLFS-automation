@@ -71,7 +71,7 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
     return CommandsList
 
 
-def BuildPkg(dat, pkg):  # install a given BLFS package on the system
+def BuildPkg(dat, pkg, rec=None, opt=None):  # install a given BLFS package on the system
     DownloadDeps(dat, [pkg], extensions)
     FileToExtract = dat[pkg]['url'][0]
     if tarfile.is_tarfile(os.path.basename(FileToExtract)):
@@ -172,7 +172,7 @@ def ParserFunction(dat):  # main parser function
     elif args.all:
         DownloadDeps(dat, dat, extensions)
     elif args.build:
-        BuildPkg(dat, args.build)
+        BuildPkg(dat, args.build, args.recommended, args.optional)
     else:
         parser.print_help()
 
