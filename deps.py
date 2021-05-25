@@ -27,7 +27,7 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Also list/download optional packages.\n",
             "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
             "This package requires some kernel configuration before installation.\n", 
-            "is not a BLFS package, you can download it at", "Downloads and installs the given packages with all of it's dependencies.\n"]
+            "is not a BLFS package, you can download it at", "Downloads and installs the given package with all of it's dependencies.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -50,7 +50,6 @@ def CheckDir():  # download directory housekeeping function
 
 def cdFix(cmd):
     for i, w in enumerate(cmd):
-        print(w)
         if w == 'cd':
             return cmd[i+1]
     return ''
@@ -67,6 +66,7 @@ def md5Check(hash, file):  # verify file hash
 def everything(dat, pkg, rec=None, opt=None):
     pkgList = ListDeps(dat, pkg, rec, opt).reverse()
     for item in pkgList:
+        print('Installing {}.\n'.format(item))
         BuildPkg(dat, item)
 
 

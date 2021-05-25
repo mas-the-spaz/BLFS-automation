@@ -1,2 +1,0 @@
-for each item in list returned from listdeps, run the build function on it.
-- build multiple

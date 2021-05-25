@@ -56,28 +56,30 @@ Note: When using the ```-b (build)``` option, it is recommended to follow along 
 
 ```
 optional arguments:
-  -a, --all             Downloads ALL BLFS packages - uses a lot of time and space
+  -a, --all             Downloads ALL BLFS packages - uses a lot of time and space.
 
 
   -b PACKAGE, --build PACKAGE
-                        Install a given Package on the system
+                        Install a given Package on the system.
 
   -c PACKAGE, --commands PACKAGE
                         List installation (without installing) commands for a given package. 
 
 
   -d PACKAGE, --download PACKAGE
-                        Downloads a given BLFS package along with all of its dependencies
+                        Downloads a given BLFS package along with all of its dependencies.
 
+  -e PACKAGE, --everything PACKAGE
+                        Downloads and installs the given package with all of it's dependencies.
 
   -l PACKAGE, --list PACKAGE
-                        Lists all of the dependencies for a given BLFS package in order of installation
+                        Lists all of the dependencies for a given BLFS package in order of installation.
 
 
   -o, --optional        Also list/download optional packages.
 
 
-  -r, --recommended     Also list/download recommended packages
+  -r, --recommended     Also list/download recommended packages.
   ```
 
 Contributers: Ahron Maslin, Josh W. (moral support)
