@@ -31,7 +31,6 @@ JSON scheme
 baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
 # baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/longindex.html' # uncomment this line if you are using the Systemd BLFS build.
 
-links = []
 scheme = {}
 PkgCount = 0
 headers = {
@@ -86,9 +85,9 @@ def packageCollect(package, tagClass, tag):
                     "optional": []
                 }, 'Commands': []}  # manually add url to scheme
 
-    commands = []
-    for d in package.find_all('kbd', class_='command'):  # remove whitespace
-        commands.append(d.text)
+
+    commands = list(map(lambda d: d.text , package.find_all('kbd', class_='command')))
+
         
     kconf = []
     if package.find('div', class_='kernel'):
@@ -115,12 +114,11 @@ res = UrlGet(baseUrl)  # Begin...
 soup = Bs4(res.text, 'html.parser')
 el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
 print("Collecting base URLs....")
-for i in el.find_all('a', href=True):  # for every url... check if has href... if not add to array
-    if not '#' in i['href']:
-        links.append('https://www.linuxfromscratch.org/blfs/view/stable/' + i['href'])
+# for every url... check if has href... if not add to array
+links = list(map(lambda v: 'https://www.linuxfromscratch.org/blfs/view/stable/' + v['href'] if not '#' in v['href'] else None, el.find_all('a', href=True)))
 
 
-for a in links:
+for a in list(filter(None, links)):
     PkgCount += 1
     try:
         res = UrlGet(a)
@@ -138,7 +136,7 @@ for a in links:
     else:
         packageCollect(soup, "sect1", "h1")  # call function on std package
 
-if PkgCount == len(links):
+if PkgCount == len(list(filter(None, links))):
     print('All packages successfully downloaded!')
 else:
     print('Not all packages have been downloaded...')

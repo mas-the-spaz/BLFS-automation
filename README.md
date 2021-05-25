@@ -82,7 +82,7 @@ optional arguments:
   -r, --recommended     Also list/download recommended packages.
   ```
 
-Contributers: Ahron Maslin, Josh W. (moral support)
+Contributers: Ahron Maslin, Josh W. (moral support), Dan the Man (Project Psychologist)
 
 
 

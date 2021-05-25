@@ -71,7 +71,6 @@ def everything(dat, pkg, rec=None, opt=None):
 
 
 def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
-    CommandsList = []
     if not pkg in dat:
         print('{0} "{1}"'.format(messages[1], pkg))
         exit()
@@ -81,8 +80,7 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
             print('{}\n'.format(conf))
 
     print('Listing commands for {}\n'.format(pkg))
-    for command in dat[pkg]['Commands']:
-        CommandsList.append(command)
+    CommandsList = list(map(lambda x: x, dat[pkg]['Commands']))
     return CommandsList
 
 
