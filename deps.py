@@ -87,7 +87,9 @@ def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given pack
 
 def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
     search(dat, pkg)
-    if dat[pkg]['kconf']:
+    if 'kconf' not in dat[pkg]:  # if this is an external package
+        exit()
+    else: 
         print(messages[17])
         for conf in dat[pkg]['kconf']:
             print('{}\n'.format(conf))
