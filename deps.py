@@ -14,7 +14,7 @@ default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
 messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
-            "no dependencies found for \n", "Download directory not found - creating one.\n",
+            "The inputted value needs to be at least 3 characters.", "Download directory not found - creating one.\n",
             "Creation of download directory failed!\n", "Successfully created directory.\n",
             "Found existing download directory. Proceeding...", "Install packages in this order:\n",
             "Downloaded file could not be decompressed!\n",
@@ -27,7 +27,8 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Also list/download optional packages.\n",
             "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
             "This package requires some kernel configuration before installation.\n", 
-            "is not a BLFS package, you can download it at", "Downloads and installs the given package with all of it's dependencies.\n"]
+            "is not a BLFS package, you can download it at", "Downloads and installs the given package with all of it's dependencies.\n",
+            "Search for a given package.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
@@ -63,7 +64,21 @@ def md5Check(hash, file):  # verify file hash
         exit
 
 
-def everything(dat, pkg, rec=None, opt=None):
+def search(dat, pkg):
+    if len(pkg) <= 3:
+        print(messages[1])
+        exit()
+    if pkg in dat:
+        print('{} package exists in database.'.format(pkg))
+        return
+    print('"{}" package not found in database.'.format(pkg))
+    for item in dat.keys():
+        if pkg in item.lower():
+            print('Did you mean {}?'.format(item))
+    exit()
+
+
+def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
     pkgList = ListDeps(dat, pkg, rec, opt).reverse()
     for item in pkgList:
         print('Installing {}.\n'.format(item))
@@ -71,9 +86,7 @@ def everything(dat, pkg, rec=None, opt=None):
 
 
 def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
-    if not pkg in dat:
-        print('{0} "{1}"'.format(messages[1], pkg))
-        exit()
+    search(dat, pkg)
     if dat[pkg]['kconf']:
         print(messages[17])
         for conf in dat[pkg]['kconf']:
@@ -135,8 +148,7 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
 def ListDeps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
     __types = []
     if not pkg in dat:
-        print('{0} "{1}"'.format(messages[1], pkg))
-        exit()
+        search(dat, pkg)
     else:
         __types.append('required')
     if rec:
@@ -176,6 +188,7 @@ def ParserFunction(dat):  # main parser function
     parser.add_argument('-l', '--list', help=messages[13], metavar='PACKAGE', default=False)
     parser.add_argument('-o', '--optional', help=messages[14], action='store_true')
     parser.add_argument('-r', '--recommended', help=messages[15], action='store_true')
+    parser.add_argument('-s', '--search', help=messages[20], metavar='PACKAGE')
     args = parser.parse_args()
 
     if args.download:
@@ -190,6 +203,8 @@ def ParserFunction(dat):  # main parser function
         DownloadDeps(dat, dat, extensions)
     elif args.build:
         BuildPkg(dat, args.build)
+    elif args.search:
+        search(dat, args.search)
     else:
         parser.print_help()
 
