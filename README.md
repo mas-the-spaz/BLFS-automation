@@ -55,34 +55,28 @@ Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [
 Note: When using the ```-b (build)``` option, it is recommended to follow along the installation process in the BLFS book. This is because the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Additionally, some packages require further kernel configuration, as a prerequisite for installation.
 
 ```
-optional arguments:
-  -a, --all             Downloads ALL BLFS packages - uses a lot of time and space.
+  -h, --help                        show this help message and exit
 
+  -a, --all                         Downloads ALL BLFS packages - uses a lot of time and space.
 
-  -b PACKAGE, --build PACKAGE
-                        Install a given Package on the system.
+  -b PACKAGE, --build PACKAGE       Install a given Package on the system.
 
-  -c PACKAGE, --commands PACKAGE
-                        List installation (without installing) commands for a given package. 
+  -c PACKAGE, --commands PACKAGE    List installation (without installing) commands for a given package.
+  
+  -d PACKAGE, --download PACKAGE    Downloads a given BLFS package along with all of its dependencies.
 
+  -e PACKAGE, --everything PACKAGE  Downloads and installs the given package with all of it's dependencies.
 
-  -d PACKAGE, --download PACKAGE
-                        Downloads a given BLFS package along with all of its dependencies.
+  -l PACKAGE, --list PACKAGE        Lists all of the dependencies for a given BLFS package in order of installation.
 
-  -e PACKAGE, --everything PACKAGE
-                        Downloads and installs the given package with all of it's dependencies.
+  -o, --optional                    Also list/download optional packages.
 
-  -l PACKAGE, --list PACKAGE
-                        Lists all of the dependencies for a given BLFS package in order of installation.
+  -r, --recommended                 Also list/download recommended packages.
 
-
-  -o, --optional        Also list/download optional packages.
-
-
-  -r, --recommended     Also list/download recommended packages.
+  -s PACKAGE, --search PACKAGE      Search for a given package.
   ```
 
-Contributers: Ahron Maslin, Josh W. (moral support), Dan the Man (Project Psychologist)
+Contributers: Ahron Maslin (creator, maintainer, and designer), Josh W. (moral support), Dan the Man (Chief Psychologist)
 
 
 
