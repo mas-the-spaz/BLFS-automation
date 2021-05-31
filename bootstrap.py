@@ -67,7 +67,6 @@ def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they
     return NewList
 
 
-
 def packageCollect(package, tagClass, tag):
     name = StripText(package.find(tag, class_=tagClass).text).strip()  # string of name
 
@@ -88,16 +87,11 @@ def packageCollect(package, tagClass, tag):
 
     commands = list(map(lambda d: d.text , package.find_all('kbd', class_='command')))
 
-        
-    kconf = []
-    if package.find('div', class_='kernel'):
-        for g in package.find_all('div', class_='kernel'):
-            for h in g.find_all('pre', class_='screen'):
-                kconf.extend(h.find('code', class_='literal'))
-
+    kconf = list(map(lambda a: a.text, package.select('div.kernel pre.screen code.literal'))) 
 
     urls = []
     hashes = []
+    u = list(map(lambda x: x['href'], package.select('div.itemizedlist a.ulink'))) 
     if package.find('div', class_='itemizedlist'):  # if package has urls add to array
         for d in package.find_all('div', class_='itemizedlist'):
             for e in d.find_all('a', class_='ulink'):  
