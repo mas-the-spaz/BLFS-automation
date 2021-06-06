@@ -16,24 +16,24 @@ default_download_path = '/blfs_sources/'
 messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
             "The inputted value needs to be at least 3 characters.", "Download directory not found - creating one.\n",
             "Creation of download directory failed!\n", "Successfully created directory.\n",
-            "Found existing download directory. Proceeding...", "Install packages in this order:\n",
+            "Found existing download directory. Proceeding...", "Install_queryinstall_query packages in this order:\n",
             "Downloaded file could not be decompressed!\n",
-            "A simple script to list, download, and install any valid BLFS package along with any dependencies.\n"
+            "A simple script to list, download, and install_query any valid BLFS package along with any dependencies.\n"
             "(Input is cAsE sEnsItIvE).\n",
-            "Downloads ALL BLFS packages - uses a lot of time and space.\n", "Install a given Package on the system.\n",
-            "List installation (without installing) commands for a given package.\n",
+            "Downloads ALL BLFS packages - uses a lot of time and space.\n", "Install_queryinstall_query a given Package on the system.\n",
+            "List install_queryation (without install_querying) commands for a given package.\n",
             "Downloads a given BLFS package along with all of its dependencies.\n",
-            "Lists all of the dependencies for a given BLFS package in order of installation.\n",
+            "Lists all of the dependencies for a given BLFS package in order of install_queryation.\n",
             "Also list/download optional packages.\n",
             "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
-            "This package requires some kernel configuration before installation.\n", 
-            "is not a BLFS package, you can download it at", "Downloads and installs the given package with all of it's dependencies.\n",
+            "This package requires some kernel configuration before install_queryation.\n", 
+            "is not a BLFS package, you can download it at", "Downloads and install_querys the given package with all of it's dependencies.\n",
             "Search for a given package.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
 
-def CheckDir():  # download directory housekeeping function
+def check_dir():  # download directory housekeeping function
     if not os.path.exists(default_download_path):
         print(messages[2])
         try:
@@ -49,23 +49,23 @@ def CheckDir():  # download directory housekeeping function
     return
 
 
-def cdFix(cmd):
+def change_dir(cmd):
     for i, w in enumerate(cmd):
         if w == 'cd':
             return cmd[i+1]
     return ''
 
 
-def md5Check(hash, file):  # verify file hash
-    fileHash = hashlib.md5(open(file,'rb').read()).hexdigest()
-    if hash != fileHash:
+def MD5_check(hash, file):  # verify file hash
+    file_hash = hashlib.md5(open(file,'rb').read()).hexdigest()
+    if hash != file_hash:
         print(messages[16])
         os.remove(file)
         exit
 
 
 def search(dat, pkg):
-    if len(pkg) <= 3:
+    if len(pkg) < 3:
         print(messages[1])
         exit()
     if pkg in dat:
@@ -79,15 +79,16 @@ def search(dat, pkg):
 
 
 def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
-    pkgList = ListDeps(dat, pkg, rec, opt).reverse()
-    for item in pkgList:
+    pkg_list = list_deps(dat, pkg, rec, opt).reverse()
+    for item in pkg_list:
         print('Installing {}.\n'.format(item))
-        BuildPkg(dat, item)
+        build_pkg(dat, item)
 
 
-def ListCommands(dat, pkg):  # list the installation commands for a given BLFS package
+def list_commands(dat, pkg):  # list the installation commands for a given BLFS package
     search(dat, pkg)
-    if 'kconf' not in dat[pkg]:  # if this is an external package
+    if dat[pkg]['type'] != 'BLFS':  # if this is an external package 
+        print('"{0}" {1} {2}'.format(pkg, messages[18], dat[pkg]['url'][0]))
         exit()
     else: 
         print(messages[17])
@@ -95,42 +96,42 @@ def ListCommands(dat, pkg):  # list the installation commands for a given BLFS p
             print('{}\n'.format(conf))
 
     print('Listing commands for {}\n'.format(pkg))
-    CommandsList = list(map(lambda x: x, dat[pkg]['Commands']))
-    return CommandsList
+    commands_list = list(map(lambda x: x, dat[pkg]['Commands']))
+    return commands_list
 
 
-def BuildPkg(dat, pkg):  # install a given BLFS package on the system
-    DownloadDeps(dat, [pkg], extensions)
-    FileToExtract = dat[pkg]['url'][0]
-    if tarfile.is_tarfile(os.path.basename(FileToExtract)):
-        with tarfile.open(os.path.basename(FileToExtract), 'r') as tar_ref:
+def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
+    download_deps(dat, [pkg], extensions)
+    file_to_extract = dat[pkg]['url'][0]
+    if tarfile.is_tarfile(os.path.basename(file_to_extract)):
+        with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
             tar_ref.extractall()
             os.chdir(tar_ref.getnames()[0])
 
-    if zipfile.is_zipfile(os.path.basename(FileToExtract)):
-        with zipfile.ZipFile(os.path.basename(FileToExtract), 'r') as zip_ref:
-            print(os.path.splitext(os.path.basename(FileToExtract))[0])
-            zip_ref.extractall(os.path.splitext(os.path.basename(FileToExtract))[0])
-            os.chdir(os.path.splitext(os.path.basename(FileToExtract))[0])
+    if zipfile.is_zipfile(os.path.basename(file_to_extract)):
+        with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
+            print(os.path.splitext(os.path.basename(file_to_extract))[0])
+            zip_ref.extractall(os.path.splitext(os.path.basename(file_to_extract))[0])
+            os.chdir(os.path.splitext(os.path.basename(file_to_extract))[0])
 
-    commands = ListCommands(dat, pkg)
+    commands = list_commands(dat, pkg)
     for command in commands:
-        install = input('Should I run "{}"? <y/n>\n'.format(command))
-        if install.lower() == 'y':
+        install_query = input('Should I run "{}"? <y/n>\n'.format(command))
+        if install_query.lower() == 'y':
             print('running {}'.format(command))
             subprocess.call(['/bin/sh', '-c', command])  # output command to shell
-            os.chdir(os.getcwd() + '/' + cdFix(re.sub('\s+', ' ', command).split()))
+            os.chdir(os.getcwd() + '/' + change_dir(re.sub('\s+', ' ', command).split()))
         else:
             pass
 
 
-def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all urls or just some dependencies)
-    CheckDir()
-    for package in dlList:
-        if package in dat:
-            for index, url in enumerate(dat[package]['url']):
-                if 'Hashes' not in dat[package]:
-                    print('"{0}" {1}{2}'.format(package, messages[18], dat[package]['url'][0]))
+def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
+    check_dir()
+    for pkg in dlist:
+        if pkg in dat:
+            for index, url in enumerate(dat[pkg]['url']):
+                if dat[pkg]['type'] != 'BLFS':
+                    print('"{0}" {1} {2}'.format(pkg, messages[18], dat[pkg]['url'][0]))
                     exit()
                 for i in exts:
                     if i in url:
@@ -138,39 +139,39 @@ def DownloadDeps(dat, dlList, exts):  # download all urls in dlList (can be all 
                             print('\nDownloading: {0}\n'.format(url))
                             wget.download(url, os.path.basename(url))
                             print('\n')
-                            if index > len(dat[package]['Hashes']):
-                                md5Check(dat[package]['Hashes'][index], os.path.basename(url))
+                            if index > len(dat[pkg]['Hashes']):
+                                MD5_check(dat[pkg]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
                 
         else:
-            print('{0} "{1}"'.format(messages[1], package))
+            print('{0} "{1}"'.format(messages[1], pkg))
 
 
-def ListDeps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
-    __types = []
+def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
+    types = []
     if not pkg in dat:
         search(dat, pkg)
     else:
-        __types.append('required')
+        types.append('required')
     if rec:
-        __types.append('recommended')
+        types.append('recommended')
     elif opt:
-        __types.extend(['recommended', 'optional'])
-    return GetChild(dat, [pkg], __types)
+        types.extend(['recommended', 'optional'])
+    return get_child(dat, [pkg], types)
 
 
-def GetChild(dat, PkgList, types):  # recursively lists all dependencies for a given package
-    for pkg in PkgList:
+def get_child(dat, pkg_list, types):  # recursively lists all dependencies for a given package
+    for pkg in pkg_list:
         if pkg in dat:
             for index in types:
                 for dep in dat[pkg]['Dependencies'][index]:
-                    if not dep in PkgList:  # prevents circular dependency problems
-                        PkgList.append(dep)
-    return PkgList
+                    if not dep in pkg_list:  # prevents circular dependency problems
+                        pkg_list.append(dep)
+    return pkg_list
 
 
-def Output(lst, reverse):  # output function
+def output(lst, reverse):  # output function
     if reverse:
         print(messages[6])
         lst.reverse()
@@ -180,7 +181,7 @@ def Output(lst, reverse):  # output function
         print(thing)
 
 
-def ParserFunction(dat):  # main parser function
+def parser(dat):  # main parser function
     parser = argparse.ArgumentParser(description=messages[8], prog='deps.py')
     parser.add_argument('-a', '--all', help=messages[9], action='store_true')
     parser.add_argument('-b', '--build', help=messages[10], metavar='PACKAGE', default=False)
@@ -194,17 +195,17 @@ def ParserFunction(dat):  # main parser function
     args = parser.parse_args()
 
     if args.download:
-        DownloadDeps(dat, ListDeps(dat, args.download, args.recommended, args.optional), extensions)
+        download_deps(dat, list_deps(dat, args.download, args.recommended, args.optional), extensions)
     elif args.everything:
         everything(dat, args.everything, args.recommended, args.optional)
     elif args.list:
-        Output(ListDeps(dat, args.list, args.recommended, args.optional), True)
+        output(list_deps(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
-        Output(ListCommands(dat, args.commands), False)
+        output(list_commands(dat, args.commands), False)
     elif args.all:
-        DownloadDeps(dat, dat, extensions)
+        download_deps(dat, dat, extensions)
     elif args.build:
-        BuildPkg(dat, args.build)
+        build_pkg(dat, args.build)
     elif args.search:
         search(dat, args.search)
     else:
@@ -218,4 +219,4 @@ if not os.path.exists('dependencies.json'):
 with open('dependencies.json', 'r') as scheme:
     data = json.load(scheme)
 
-ParserFunction(data)
+parser(data)

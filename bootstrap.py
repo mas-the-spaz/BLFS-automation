@@ -28,20 +28,20 @@ JSON scheme
 }
 '''
 
-baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
-# baseUrl = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/longindex.html' # uncomment this line if you are using the Systemd BLFS build.
+BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
+# BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/longindex.html' # uncomment this line if you are using the Systemd BLFS build.
 
 scheme = {}
-PkgCount = 0
+pkg_count = 0
 headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT x.y; rv:10.0) Gecko/20100101 Firefox/10.0'
 }
 
 
-def StripText(string):
+def strip_text(string):
     return re.sub(r'\n\s+', ' ', string)
 
-def UrlGet(url):
+def url_get(url):
     s = requests.Session()
 
     retries = Retry(total=5,
@@ -53,36 +53,36 @@ def UrlGet(url):
     return s.get(url.rstrip(), verify=False, headers=headers, timeout=30)
 
 
-def FtpUrlFilter(UrlsList):  # removes ftp links from url list, but only if they are duplicates
-    NewList = []
+def FTP_URL_filter(URL_list):  # removes ftp links from url list, but only if they are duplicates
+    newlist = []
     i = 0
-    while i < len(UrlsList):
-        if 'texlive' in UrlsList[i]:  # the texlive package only contains ftp urls
-            return UrlsList
+    while i < len(URL_list):
+        if 'texlive' in URL_list[i]:  # the texlive package only contains ftp urls
+            return URL_list
         if (i % 2) == 0:
-            NewList.append(UrlsList[i])
-        elif not 'ftp://' in UrlsList[i]:
-            NewList.append(UrlsList[i])
+            newlist.append(URL_list[i])
+        elif not 'ftp://' in URL_list[i]:
+            newlist.append(URL_list[i])
         i += 1
-    return NewList
+    return newlist
 
 
-def packageCollect(package, tagClass, tag):
-    name = StripText(package.find(tag, class_=tagClass).text).strip()  # string of name
+def package_collect(package, tag_class, tag):
+    name = strip_text(package.find(tag, class_=tag_class).text).strip()  # string of name
 
     deps = {'required': [], 'recommended': [], 'optional': []}
     for c in deps:
         for d in package.find_all('p', class_=c):
             for e in d.find_all('a', title=True, class_='xref'):  # grab blfs deps
-                deps[c].append(StripText(e['title']))
+                deps[c].append(strip_text(e['title']))
 
             for e in d.find_all('a', class_='ulink'):  # grab external deps
-                deps[c].append(StripText(e.text))
-                scheme[StripText(e.text)] = {'name': StripText(e.text), 'url': [e['href']], "Dependencies": {
+                deps[c].append(strip_text(e.text))
+                scheme[strip_text(e.text)] = {'name': strip_text(e.text), 'url': [e['href']], "Dependencies": {
                     "required": [],
                     "recommended": [],
                     "optional": []
-                }, 'Commands': []}  # manually add url to scheme
+                }, 'Commands': [], 'type': 'external'}  # manually add url to scheme
 
 
     commands = list(map(lambda d: d.text , package.find_all('kbd', class_='command')))
@@ -101,10 +101,10 @@ def packageCollect(package, tagClass, tag):
                     hashes.extend(f.getText().split()[-1:])
     
     print("Downloading info for {0}".format(name))
-    scheme[name] = {'name': name, 'url': FtpUrlFilter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf}
+    scheme[name] = {'name': name, 'url': FTP_URL_filter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf, 'type': 'BLFS'}
 
 
-res = UrlGet(baseUrl)  # Begin...
+res = url_get(BASEURL)  # Begin...
 soup = Bs4(res.text, 'html.parser')
 el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
 print("Collecting base URLs....")
@@ -113,9 +113,9 @@ links = list(map(lambda v: 'https://www.linuxfromscratch.org/blfs/view/stable/' 
 
 
 for a in list(filter(None, links)):
-    PkgCount += 1
+    pkg_count += 1
     try:
-        res = UrlGet(a)
+        res = url_get(a)
     except requests.ConnectionError as e:
         print("OOPS!! Connection Error. Make sure you are connected to Internet. Technical Details given below.\n")
         print(str(e))  
@@ -126,16 +126,16 @@ for a in list(filter(None, links)):
     if len(soup.find_all('div', class_='sect2')) > 1:  # if soup is module instead of std package
         for module in soup.find_all('div', class_='sect2'):
             if module.find_all('div', class_='package'):  # limit to modules only
-                packageCollect(module, "sect2", "h2")  # call function on module
+                package_collect(module, "sect2", "h2")  # call function on module
     else:
-        packageCollect(soup, "sect1", "h1")  # call function on std package
+        package_collect(soup, "sect1", "h1")  # call function on std package
 
-if PkgCount == len(list(filter(None, links))):
+if pkg_count == len(list(filter(None, links))):
     print('All packages successfully downloaded!')
 else:
     print('Not all packages have been downloaded...')
     print('Number of urls: {}'.format(str(len(links))))
-    print('Number of downloaded packages: {}'.format(PkgCount))
+    print('Number of downloaded packages: {}'.format(pkg_count))
 
 with open('dependencies.json', 'w+') as b:  # dump info to json file
     json.dump(scheme, b)
