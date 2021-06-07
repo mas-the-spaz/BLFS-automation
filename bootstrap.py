@@ -6,9 +6,7 @@ from urllib3.util import Retry
 from bs4 import BeautifulSoup as Bs4
 import json
 import re
-import warnings
 
-warnings.filterwarnings("ignore")  # suppress ssl cert warnings
 
 '''
 JSON scheme
@@ -50,7 +48,7 @@ def url_get(url):
 
     s.mount('http://', HTTPAdapter(max_retries=retries))
     s.mount('https://', HTTPAdapter(max_retries=retries))
-    return s.get(url.rstrip(), verify=False, headers=headers, timeout=30)
+    return s.get(url.rstrip(), headers=headers, timeout=30)
 
 
 def FTP_URL_filter(URL_list):  # removes ftp links from url list, but only if they are duplicates

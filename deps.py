@@ -79,18 +79,18 @@ def search(dat, pkg):
 
 
 def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
-    pkg_list = list_deps(dat, pkg, rec, opt).reverse()
-    for item in pkg_list:
+    pkg_list = list_deps(dat, pkg, rec, opt)
+    for item in reversed(pkg_list):
         print('Installing {}.\n'.format(item))
         build_pkg(dat, item)
 
 
 def list_commands(dat, pkg):  # list the installation commands for a given BLFS package
     search(dat, pkg)
-    if dat[pkg]['type'] != 'BLFS':  # if this is an external package 
+    if dat[pkg]['type'] != 'BLFS':  # if this is an external package
         print('"{0}" {1} {2}'.format(pkg, messages[18], dat[pkg]['url'][0]))
         exit()
-    else: 
+    else:
         print(messages[17])
         for conf in dat[pkg]['kconf']:
             print('{}\n'.format(conf))
@@ -143,7 +143,6 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
                                 MD5_check(dat[pkg]['Hashes'][index], os.path.basename(url))
                         else:
                             print('{} already has been downloaded'.format(os.path.basename(url)))
-                
         else:
             print('{0} "{1}"'.format(messages[1], pkg))
 
