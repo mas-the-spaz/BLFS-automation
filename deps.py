@@ -16,18 +16,18 @@ default_download_path = '/blfs_sources/'
 messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
             "The inputted value needs to be at least 3 characters.", "Download directory not found - creating one.\n",
             "Creation of download directory failed!\n", "Successfully created directory.\n",
-            "Found existing download directory. Proceeding...", "Install_queryinstall_query packages in this order:\n",
+            "Found existing download directory. Proceeding...", "Install packages in this order:\n",
             "Downloaded file could not be decompressed!\n",
-            "A simple script to list, download, and install_query any valid BLFS package along with any dependencies.\n"
+            "A simple script to list, download, and install any valid BLFS package along with any dependencies.\n"
             "(Input is cAsE sEnsItIvE).\n",
-            "Downloads ALL BLFS packages - uses a lot of time and space.\n", "Install_queryinstall_query a given Package on the system.\n",
-            "List install_queryation (without install_querying) commands for a given package.\n",
+            "Downloads ALL BLFS packages - uses a lot of time and space.\n", "Install a given Package on the system.\n",
+            "List installation (without installing) commands for a given package.\n",
             "Downloads a given BLFS package along with all of its dependencies.\n",
-            "Lists all of the dependencies for a given BLFS package in order of install_queryation.\n",
+            "Lists all of the dependencies for a given BLFS package in order of installation.\n",
             "Also list/download optional packages.\n",
             "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
-            "This package requires some kernel configuration before install_queryation.\n", 
-            "is not a BLFS package, you can download it at", "Downloads and install_querys the given package with all of it's dependencies.\n",
+            "This package requires some kernel configuration before installation.\n", 
+            "is not a BLFS package, you can download it at", "Downloads and installs thegiven package with all of it's dependencies.\n",
             "Search for a given package.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
