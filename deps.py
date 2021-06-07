@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from typing_extensions import ParamSpecKwargs
 import wget
 import argparse
 import json
@@ -90,7 +91,7 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
     if dat[pkg]['type'] != 'BLFS':  # if this is an external package
         print('"{0}" {1} {2}'.format(pkg, messages[18], dat[pkg]['url'][0]))
         exit()
-    else:
+    elif dat[pkg]['kconf']:
         print(messages[17])
         for conf in dat[pkg]['kconf']:
             print('{}\n'.format(conf))
@@ -101,6 +102,7 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
 
 
 def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
+    search(dat, pkg)
     download_deps(dat, [pkg], extensions)
     file_to_extract = dat[pkg]['url'][0]
     if tarfile.is_tarfile(os.path.basename(file_to_extract)):
