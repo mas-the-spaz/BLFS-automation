@@ -26,8 +26,8 @@ JSON scheme
 }
 '''
 
-BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable/longindex.html'  # URL containing all package urls
-# BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/longindex.html' # uncomment this line if you are using the Systemd BLFS build.
+BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable/'  # URL containing all package urls
+#BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/' # uncomment this line if you are using the Systemd BLFS build.
 
 scheme = {}
 pkg_count = 0
@@ -102,12 +102,12 @@ def package_collect(package, tag_class, tag):
     scheme[name] = {'name': name, 'url': FTP_URL_filter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf, 'type': 'BLFS'}
 
 
-res = url_get(BASEURL)  # Begin...
+res = url_get(BASEURL + 'longindex.html')  # Begin...
 soup = Bs4(res.text, 'html.parser')
 el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
 print("Collecting base URLs....")
 # for every url... check if has href... if not add to array
-links = list(map(lambda v: 'https://www.linuxfromscratch.org/blfs/view/stable/' + v['href'] if not '#' in v['href'] else None, el.find_all('a', href=True)))
+links = list(map(lambda v: BASEURL + v['href'] if not '#' in v['href'] else None, el.find_all('a', href=True)))
 
 
 for a in list(filter(None, links)):
