@@ -117,7 +117,7 @@ def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
 
     commands = list_commands(dat, pkg)
     for command in commands:
-        install_query = input('Should I run "{}"? <y/n>\n'.format(command))
+        install_query = input('\33[32m Should I run "{}"? <y/n>\33[0m \n'.format(command))
         if install_query.lower() == 'y':
             print('running {}'.format(command))
             subprocess.call(['/bin/sh', '-c', command])  # output command to shell
