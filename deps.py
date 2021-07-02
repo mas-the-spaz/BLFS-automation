@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from typing_extensions import ParamSpecKwargs
 import wget
 import argparse
 import json
