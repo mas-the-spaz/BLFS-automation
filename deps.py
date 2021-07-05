@@ -81,8 +81,11 @@ def search(dat, pkg):
 def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
     pkg_list = list_deps(dat, pkg, rec, opt)
     for item in reversed(pkg_list):
-        print('Installing {}.\n'.format(item))
-        build_pkg(dat, item)
+        if item in dat:
+            print('Installing {}.\n'.format(item))
+            build_pkg(dat, item)
+        else:
+            print('{} package not found in database - skipping to the next package'.format(item))
 
 
 def list_commands(dat, pkg):  # list the installation commands for a given BLFS package
@@ -107,7 +110,7 @@ def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
     if tarfile.is_tarfile(os.path.basename(file_to_extract)):
         with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
             tar_ref.extractall()
-            os.chdir(tar_ref.getnames()[0])
+            os.chdir(os.path.dirname(tar_ref.getnames()[0]))
 
     if zipfile.is_zipfile(os.path.basename(file_to_extract)):
         with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
@@ -117,7 +120,7 @@ def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
 
     commands = list_commands(dat, pkg)
     for command in commands:
-        install_query = input('\33[32m Should I run "{}"? <y/n>\33[0m \n'.format(command))
+        install_query = input('\33[32mShould I run "{}"? <y/n>\33[0m\n'.format(command))
         if install_query.lower() == 'y':
             print('running {}'.format(command))
             subprocess.call(['/bin/sh', '-c', command])  # output command to shell
@@ -137,13 +140,13 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
                 for i in exts:
                     if i in url:
                         if not os.path.isfile(os.path.basename(url)):
-                            print('\nDownloading: {0}\n'.format(url))
+                            print('\n\33[32Downloading: {0}\33[0m\n'.format(url))
                             wget.download(url, os.path.basename(url))
                             print('\n')
                             if index > len(dat[pkg]['Hashes']):
                                 MD5_check(dat[pkg]['Hashes'][index], os.path.basename(url))
                         else:
-                            print('{} already has been downloaded'.format(os.path.basename(url)))
+                            print('\33\[31{} already has been downloaded\33[0m'.format(os.path.basename(url)))
         else:
             print('{0} "{1}"'.format(messages[1], pkg))
 
