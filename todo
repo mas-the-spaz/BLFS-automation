@@ -1,0 +1,2 @@
+add sys.argv option to install without a flag?
+suppress keystroke during a subprocess
