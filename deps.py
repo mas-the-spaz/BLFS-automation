@@ -13,6 +13,8 @@ import re
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
+exceptions = ['Xorg Libraries', 'Xorg Applications', 'Xorg Fonts']
+
 messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
             "The inputted value needs to be at least 3 characters.", "Download directory not found - creating one.\n",
             "Creation of download directory failed!\n", "Successfully created directory.\n",
@@ -106,17 +108,23 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
 def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
     search(dat, pkg)
     download_deps(dat, [pkg], extensions)
-    file_to_extract = dat[pkg]['url'][0]
-    if tarfile.is_tarfile(os.path.basename(file_to_extract)):
-        with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
-            tar_ref.extractall()
-            os.chdir(tar_ref.getnames()[0].split('/', 1)[0])
+    if pkg not in exceptions:
+        file_to_extract = dat[pkg]['url'][0]
+        if tarfile.is_tarfile(os.path.basename(file_to_extract)):
+            with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
+                tar_ref.extractall()
+                os.chdir(tar_ref.getnames()[0].split('/', 1)[0])
 
-    if zipfile.is_zipfile(os.path.basename(file_to_extract)):
-        with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
-            print(os.path.splitext(os.path.basename(file_to_extract))[0])
-            zip_ref.extractall(os.path.splitext(os.path.basename(file_to_extract))[0])
-            os.chdir(os.path.splitext(os.path.basename(file_to_extract))[0])
+        if zipfile.is_zipfile(os.path.basename(file_to_extract)):
+            with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
+                print(os.path.splitext(os.path.basename(file_to_extract))[0])
+                zip_ref.extractall(os.path.splitext(os.path.basename(file_to_extract))[0])
+                os.chdir(os.path.splitext(os.path.basename(file_to_extract))[0])
+    else:
+        _pkg = pkg.replace(' ', '_')
+        if not os.path.exists(default_download_path + _pkg):
+            os.mkdir(_pkg)
+            os.chdir(_pkg)
 
     commands = list_commands(dat, pkg)
     for command in commands:
@@ -132,7 +140,7 @@ def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
 def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
     check_dir()
     for pkg in dlist:
-        if pkg in dat:
+        if pkg in dat and pkg not in exceptions:
             for index, url in enumerate(dat[pkg]['url']):
                 if dat[pkg]['type'] != 'BLFS':
                     print('"{0}" {1} {2}'.format(pkg, messages[18], dat[pkg]['url'][0]))
@@ -147,6 +155,8 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
                                 MD5_check(dat[pkg]['Hashes'][index], os.path.basename(url))
                         else:
                             print('\33[31m{} already has been downloaded\33[0m'.format(os.path.basename(url)))
+        elif pkg in exceptions:
+            print('{} package must be installed manually.'.format(pkg))
         else:
             print('{0} "{1}"'.format(messages[1], pkg))
 
