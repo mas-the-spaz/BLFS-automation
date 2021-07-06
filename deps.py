@@ -234,7 +234,7 @@ def parser(dat):  # main parser function
     os.chdir(script_path)
     with open('installed', 'w') as install_file:
         for i in installed:
-            install_file.write('{}'.format(i))
+            install_file.write('{}\n'.format(i))
 
 
 if not os.path.exists('dependencies.json'):
