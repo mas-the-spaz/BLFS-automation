@@ -250,5 +250,6 @@ if not os.path.exists('installed'):
 
 with open('installed', 'r') as i:
     installed = i.readlines()
+    installed = [i.strip() for i in installed]
 
 parser(data)
