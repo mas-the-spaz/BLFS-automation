@@ -137,3 +137,6 @@ else:
 
 with open('dependencies.json', 'w+') as b:  # dump info to json file
     json.dump(scheme, b)
+
+with open('installed', 'w') as i:
+    i.write('')

@@ -13,6 +13,8 @@ import re
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
+script_path = os.getcwd()
+
 exceptions = ['Xorg Libraries', 'Xorg Applications', 'Xorg Fonts']
 
 messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
@@ -108,33 +110,38 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
 def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
     search(dat, pkg)
     download_deps(dat, [pkg], extensions)
-    if pkg not in exceptions:
-        file_to_extract = dat[pkg]['url'][0]
-        if tarfile.is_tarfile(os.path.basename(file_to_extract)):
-            with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
-                tar_ref.extractall()
-                os.chdir(tar_ref.getnames()[0].split('/', 1)[0])
-
-        if zipfile.is_zipfile(os.path.basename(file_to_extract)):
-            with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
-                print(os.path.splitext(os.path.basename(file_to_extract))[0])
-                zip_ref.extractall(os.path.splitext(os.path.basename(file_to_extract))[0])
-                os.chdir(os.path.splitext(os.path.basename(file_to_extract))[0])
+    if pkg in installed:
+        print('\33[31m{} has already been installed - skipping\33[0m'.format(pkg))
+        return
     else:
-        _pkg = pkg.replace(' ', '_')
-        if not os.path.exists(default_download_path + _pkg):
-            os.mkdir(_pkg)
-            os.chdir(_pkg)
+        if pkg not in exceptions:
+            file_to_extract = dat[pkg]['url'][0]
+            if tarfile.is_tarfile(os.path.basename(file_to_extract)):
+                with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
+                    tar_ref.extractall()
+                    os.chdir(tar_ref.getnames()[0].split('/', 1)[0])
 
-    commands = list_commands(dat, pkg)
-    for command in commands:
-        install_query = input('\33[32mShould I run "{}"? <y/n>\33[0m\n'.format(command))
-        if install_query.lower() == 'y':
-            print('running {}'.format(command))
-            subprocess.call(['/bin/sh', '-c', command])  # output command to shell
-            os.chdir(os.getcwd() + '/' + change_dir(re.sub('\s+', ' ', command).split()))
+            if zipfile.is_zipfile(os.path.basename(file_to_extract)):
+                with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
+                    print(os.path.splitext(os.path.basename(file_to_extract))[0])
+                    zip_ref.extractall(os.path.splitext(os.path.basename(file_to_extract))[0])
+                    os.chdir(os.path.splitext(os.path.basename(file_to_extract))[0])
         else:
-            pass
+            _pkg = pkg.replace(' ', '_')
+            if not os.path.exists(default_download_path + _pkg):
+                os.mkdir(_pkg)
+                os.chdir(_pkg)
+
+        commands = list_commands(dat, pkg)
+        for command in commands:
+            install_query = input('\33[32mShould I run "{}"? <y/n>\33[0m\n'.format(command))
+            if install_query.lower() == 'y':
+                print('running {}'.format(command))
+                subprocess.call(['/bin/sh', '-c', command])  # output command to shell
+                os.chdir(os.getcwd() + '/' + change_dir(re.sub('\s+', ' ', command).split()))
+            else:
+                pass
+        installed.append(pkg)
 
 
 def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
@@ -224,6 +231,11 @@ def parser(dat):  # main parser function
     else:
         parser.print_help()
 
+    os.chdir(script_path)
+    with open('installed', 'w') as install_file:
+        for i in installed:
+            install_file.write('{}'.format(i))
+
 
 if not os.path.exists('dependencies.json'):
     print(messages[0])
@@ -231,5 +243,12 @@ if not os.path.exists('dependencies.json'):
 
 with open('dependencies.json', 'r') as scheme:
     data = json.load(scheme)
+
+if not os.path.exists('installed'):
+    with open('installed', 'w') as f:
+        f.write('')
+
+with open('installed', 'r') as i:
+    installed = i.readlines()
 
 parser(data)
