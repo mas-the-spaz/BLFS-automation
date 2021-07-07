@@ -15,7 +15,7 @@ default_download_path = '/blfs_sources/'
 
 script_path = os.getcwd()
 
-exceptions = ['Xorg Libraries', 'Xorg Applications', 'Xorg Fonts']
+exceptions = ['Xorg Libraries', 'Xorg Applications', 'Xorg Fonts', 'Xorg Legacy']
 
 messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
             "The inputted value needs to be at least 3 characters.", "Download directory not found - creating one.\n",
