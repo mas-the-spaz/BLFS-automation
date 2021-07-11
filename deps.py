@@ -9,6 +9,8 @@ import zipfile
 import hashlib
 import subprocess
 import re
+from shutil import rmtree
+import signal
 
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
@@ -35,6 +37,17 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Search for a given package.\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
+
+
+def cleanup(signum, frame):
+    os.chdir(script_path)
+    with open('installed', 'w') as install_file:
+        for i in installed:
+            install_file.write('{}\n'.format(i))
+    print('Installation interrupted - exiting.')
+    exit(0)
+
+signal.signal(signal.SIGINT, cleanup)
 
 
 def check_dir():  # download directory housekeeping function
@@ -77,7 +90,7 @@ def search(dat, pkg):
         return
     print('"{}" package not found in database.'.format(pkg))
     for item in dat.keys():
-        if pkg in item.lower():
+        if pkg.lower() in item.lower():
             print('Did you mean {}?'.format(item))
     exit()
 
@@ -107,7 +120,7 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
     return commands_list
 
 
-def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
+def build_pkg(dat, pkg):  # install a given BLFS package on the system
     search(dat, pkg)
     download_deps(dat, [pkg], extensions)
     if pkg in installed:
@@ -133,6 +146,7 @@ def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
                 os.chdir(_pkg)
 
         commands = list_commands(dat, pkg)
+        package_dir = os.getcwd()
         for command in commands:
             install_query = input('\33[32mShould I run "{}"? <y/n>\33[0m\n'.format(command))
             if install_query.lower() == 'y':
@@ -142,6 +156,9 @@ def build_pkg(dat, pkg):  # install_query a given BLFS package on the system
             else:
                 pass
         installed.append(pkg)
+        os.chdir(default_download_path)
+        rmtree(package_dir)
+
 
 
 def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
