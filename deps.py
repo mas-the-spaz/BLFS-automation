@@ -160,7 +160,6 @@ def build_pkg(dat, pkg):  # install a given BLFS package on the system
         rmtree(package_dir)
 
 
-
 def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
     check_dir()
     for pkg in dlist:
@@ -199,19 +198,25 @@ def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be r
 
 
 def get_child(dat, pkg_list, types):  # recursively lists all dependencies for a given package
+    duplicate_list = []
     for pkg in pkg_list:
         if pkg in dat:
             for index in types:
                 for dep in dat[pkg]['Dependencies'][index]:
                     if not dep in pkg_list:  # prevents circular dependency problems
                         pkg_list.append(dep)
+                    else:  # if it is, i need to make sure it gets put at the top of the list
+                        duplicate_list.append(dep)
+    pkg_list.extend(duplicate_list)
     return pkg_list
 
 
 def output(lst, reverse):  # output function
+    
     if reverse:
         print(messages[6])
         lst.reverse()
+        lst = list(dict.fromkeys(lst))
     else:
         pass
     for thing in lst:
