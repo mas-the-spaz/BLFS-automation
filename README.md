@@ -9,7 +9,7 @@ BLFS packages often require many other dependencies to work, and sometimes it is
 <br><br>
 This project contains two scripts: The first, ```bootstrap.py``` will build a local database containing all the dependencies, the urls, and the installation commands.
 
-The second script ```deps.py```, will parse through the database, and depending on the options, either list the dependencies, download all the dependencies, download **all** packages (uses a lot of time and space), list installation commands for a given package, or install the given package on the BLFS system.
+The second script, ```deps.py```, will parse through the database, and depending on the options, either list the dependencies, download all the dependencies, download **all** packages (uses a lot of time and space), list installation commands for a given package, or install the given package on the BLFS system.
 
      
 
@@ -48,11 +48,11 @@ Alternatively, you can just use the included ```dependencies.json``` file. At th
 
  
 The main script ```deps.py```, has many options to list, download, list commands, or install a package.
-Note: once again it is *highly* recommended that you run this as ```root```!
+Note: once again it is *highly* recommended that you always run this as ```root```!
 
 Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-l PACKAGE] [-o] [-r]```
 
-Note: When using the ```-b (build)``` option, it is recommended to follow along the installation process in the BLFS book. This is because the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Additionally, some packages require further kernel configuration, as a prerequisite for installation.
+Note: It is recommended to follow along the installation process in the BLFS book. This tool is not perfect and I have not tested every BLFS package. There are still some issues with circular dependencies, and at the moment it is best to moniter everything to prevent problems. Additionally, the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Furthermore, some packages require further kernel configuration (and recompilation) as a prerequisite for installation.
 
 ```
   -h, --help                        show this help message and exit
@@ -76,7 +76,17 @@ Note: When using the ```-b (build)``` option, it is recommended to follow along 
   -s PACKAGE, --search PACKAGE      Search for a given package.
   ```
 
-Contributers: Ahron Maslin (creator, maintainer, and designer), Josh W. (moral support), Dan the Man (Chief Psychologist)
+## Additional options:
+If you are building BLFS with Systemd, you must uncomment a line in the ```bootstrap.py``` file to get the right sources. Run the following command to fix that:
+```
+sed -i '/stable-systemd/s/^# *//' bootstrap.py
+```
+
+If you would like to change the default download location, you can modify it in ```deps.py```.
+
+
+## Contributers: 
+Ahron Maslin (creator, maintainer, and designer), Josh W. (moral support), Dan the Man (Chief Psychologist)
 
 
 

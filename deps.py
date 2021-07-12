@@ -97,12 +97,12 @@ def search(dat, pkg):
 
 def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
     pkg_list = list_deps(dat, pkg, rec, opt)
-    for item in reversed(pkg_list):
+    for item in pkg_list:
         if item in dat:
             print('Installing {}.\n'.format(item))
-            build_pkg(dat, item)
+            #build_pkg(dat, item)
         else:
-            print('{} package not found in database - skipping to the next package'.format(item))
+            print('"{}" package not found in database - skipping to the next package'.format(item))
 
 
 def list_commands(dat, pkg):  # list the installation commands for a given BLFS package
@@ -194,10 +194,10 @@ def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be r
         types.append('recommended')
     elif opt:
         types.extend(['recommended', 'optional'])
-    return get_child(dat, [pkg], types)
+    return get_child(dat, [pkg], pkg, types)
 
 
-def get_child(dat, pkg_list, types):  # recursively lists all dependencies for a given package
+def get_child(dat, pkg_list, org_pkg, types):  # recursively lists all dependencies for a given package
     duplicate_list = []
     for pkg in pkg_list:
         if pkg in dat:
@@ -207,16 +207,20 @@ def get_child(dat, pkg_list, types):  # recursively lists all dependencies for a
                         pkg_list.append(dep)
                     else:  # if it is, i need to make sure it gets put at the top of the list
                         duplicate_list.append(dep)
+    print(pkg_list)
+    print(duplicate_list)
     pkg_list.extend(duplicate_list)
+    pkg_list.reverse()
+    pkg_list = list(dict.fromkeys(pkg_list))
+    pkg_list.append(pkg_list.pop(pkg_list.index(org_pkg)))
+    # make sure that the original package is at the end of the list (will be installed last)
+    print(pkg_list)
     return pkg_list
 
 
 def output(lst, reverse):  # output function
-    
     if reverse:
         print(messages[6])
-        lst.reverse()
-        lst = list(dict.fromkeys(lst))
     else:
         pass
     for thing in lst:
