@@ -115,7 +115,6 @@ def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given pack
     pkg_list = list_deps(dat, pkg, rec, opt)
     for item in pkg_list:
         if item in dat:
-            print('\33[32mInstalling\33[0m {}.\n'.format(item))
             build_pkg(dat, item)
         else:
             print('\33[31m"{}" package not found in database - skipping to the next package\33[0m'.format(item))
@@ -144,6 +143,7 @@ def build_pkg(dat, pkg):  # install a given BLFS package on the system
         return
     else:
         if pkg not in exceptions:
+            print('\33[32mInstalling\33[0m {}.\n'.format(pkg))
             file_to_extract = dat[pkg]['url'][0]
             if tarfile.is_tarfile(os.path.basename(file_to_extract)):
                 with tarfile.open(os.path.basename(file_to_extract), 'r') as tar_ref:
