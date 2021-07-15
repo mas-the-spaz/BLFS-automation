@@ -11,6 +11,7 @@ import subprocess
 import re
 from shutil import rmtree
 import signal
+import readline
 
 default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
@@ -38,16 +39,25 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
+circ_exceptions = ['cups-filters-1.28.7']
 
 def cleanup(signum, frame):
     os.chdir(script_path)
     with open('installed', 'w') as install_file:
         for i in installed:
             install_file.write('{}\n'.format(i))
-    print('Installation interrupted - exiting.')
+    print('\33[31mInstallation interrupted - exiting.\33[0m')
     exit(0)
 
 signal.signal(signal.SIGINT, cleanup)
+
+
+def rlinput(prompt, prefill=''):
+   readline.set_startup_hook(lambda: readline.insert_text(prefill))
+   try:
+      return input(prompt)
+   finally:
+      readline.set_startup_hook()
 
 
 def check_dir():  # download directory housekeeping function
@@ -88,21 +98,27 @@ def search(dat, pkg):
     if pkg in dat:
         print('{} package exists in database.'.format(pkg))
         return
-    print('"{}" package not found in database.'.format(pkg))
+    print('\33[31m"{}" package not found in database.\33[0m'.format(pkg))
     for item in dat.keys():
         if pkg.lower() in item.lower():
             print('Did you mean {}?'.format(item))
-    exit()
+    exit
+
+
+def cmd_run(command):
+    print('\33[32mRunning\33[0m {}'.format(command))
+    subprocess.call(['/bin/sh', '-c', command])  # output command to shell
+    os.chdir(os.getcwd() + '/' + change_dir(re.sub('\s+', ' ', command).split()))
 
 
 def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
     pkg_list = list_deps(dat, pkg, rec, opt)
     for item in pkg_list:
         if item in dat:
-            print('Installing {}.\n'.format(item))
-            #build_pkg(dat, item)
+            print('\33[32mInstalling\33[0m {}.\n'.format(item))
+            build_pkg(dat, item)
         else:
-            print('"{}" package not found in database - skipping to the next package'.format(item))
+            print('\33[31m"{}" package not found in database - skipping to the next package\33[0m'.format(item))
 
 
 def list_commands(dat, pkg):  # list the installation commands for a given BLFS package
@@ -115,7 +131,7 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
         for conf in dat[pkg]['kconf']:
             print('{}\n'.format(conf))
 
-    print('Listing commands for {}\n'.format(pkg))
+    print('\33[32mListing commands for {}\33[0m\n'.format(pkg))
     commands_list = list(map(lambda x: x, dat[pkg]['Commands']))
     return commands_list
 
@@ -148,11 +164,12 @@ def build_pkg(dat, pkg):  # install a given BLFS package on the system
         commands = list_commands(dat, pkg)
         package_dir = os.getcwd()
         for command in commands:
-            install_query = input('\33[32mShould I run "{}"? <y/n>\33[0m\n'.format(command))
-            if install_query.lower() == 'y':
-                print('running {}'.format(command))
-                subprocess.call(['/bin/sh', '-c', command])  # output command to shell
-                os.chdir(os.getcwd() + '/' + change_dir(re.sub('\s+', ' ', command).split()))
+            install_query = input('\33[32mShould I run "{}"? <y/N/m (to modify)>\33[0m\n'.format(command))
+            if install_query.lower() == '' or 'y':
+                cmd_run(command)
+            elif install_query.lower() == 'm':
+                modified_cmd = rlinput('\33[32mCommand to run:\33[0m ', command)
+                cmd_run(modified_cmd)
             else:
                 pass
         installed.append(pkg)
@@ -181,7 +198,7 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
         elif pkg in exceptions:
             print('{} package must be installed manually.'.format(pkg))
         else:
-            print('{0} "{1}"'.format(messages[1], pkg))
+            print('\33[31m{0} "{1}"\33[0m'.format(messages[1], pkg))
 
 
 def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
@@ -194,27 +211,24 @@ def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be r
         types.append('recommended')
     elif opt:
         types.extend(['recommended', 'optional'])
-    return get_child(dat, [pkg], pkg, types)
+    return get_child(dat, [pkg], types)
 
 
-def get_child(dat, pkg_list, org_pkg, types):  # recursively lists all dependencies for a given package
-    duplicate_list = []
+def get_child(dat, pkg_list, types):  # recursively lists all dependencies for a given package
+    dup_list = []
+    original = pkg_list[0]
     for pkg in pkg_list:
         if pkg in dat:
             for index in types:
                 for dep in dat[pkg]['Dependencies'][index]:
                     if not dep in pkg_list:  # prevents circular dependency problems
                         pkg_list.append(dep)
-                    else:  # if it is, i need to make sure it gets put at the top of the list
-                        duplicate_list.append(dep)
-    print(pkg_list)
-    print(duplicate_list)
-    pkg_list.extend(duplicate_list)
+                    else:  # if package is already in list, need to move it to end of list
+                        dup_list.append(dep)             
+    pkg_list[:] = [x for x in pkg_list if x not in dup_list]
+    pkg_list.extend(list(dict.fromkeys(dup_list)))
+    pkg_list.insert(0, pkg_list.pop(pkg_list.index(original)))
     pkg_list.reverse()
-    pkg_list = list(dict.fromkeys(pkg_list))
-    pkg_list.append(pkg_list.pop(pkg_list.index(org_pkg)))
-    # make sure that the original package is at the end of the list (will be installed last)
-    print(pkg_list)
     return pkg_list
 
 
