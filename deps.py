@@ -164,14 +164,14 @@ def build_pkg(dat, pkg):  # install a given BLFS package on the system
         commands = list_commands(dat, pkg)
         package_dir = os.getcwd()
         for command in commands:
-            install_query = input('\33[32mShould I run "{}"? <y/N/m (to modify)>\33[0m\n'.format(command))
-            if install_query.lower() == '' or 'y':
-                cmd_run(command)
-            elif install_query.lower() == 'm':
-                modified_cmd = rlinput('\33[32mCommand to run:\33[0m ', command)
-                cmd_run(modified_cmd)
-            else:
+            install_query = input('\33[32mShould I run "{}"? <Y/n/m (to modify)>\33[0m\n'.format(command))
+            if install_query.lower() == 'n':
                 pass
+            elif install_query.lower() == 'm':
+                modified_cmd = rlinput('\33[32mCustom command to run:\33[0m ', command)
+                cmd_run(modified_cmd)
+            elif install_query.lower() == '' or 'y':
+                cmd_run(command)
         installed.append(pkg)
         os.chdir(default_download_path)
         rmtree(package_dir)
