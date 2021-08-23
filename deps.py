@@ -35,14 +35,13 @@ messages = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
             "This package requires some kernel configuration before installation.\n", 
             "is not a BLFS package, you can download it at", "Downloads and installs thegiven package with all of it's dependencies.\n",
-            "Search for a given package.\n"]
+            "Search for a given package.\n", "Force package installation even though it is already installed\n"]
 
 extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
 circ_exceptions = ['cups-filters-1.28.7']
 
 def cleanup(signum, frame):
-    print(os.getcwd())
     os.chdir(script_path)
     if os.path.exists(PACKAGE_DIR):
         rmtree(PACKAGE_DIR)
@@ -115,11 +114,11 @@ def cmd_run(command):
     os.chdir(os.getcwd() + '/' + change_dir(re.sub('\s+', ' ', command).split()))
 
 
-def everything(dat, pkg, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
+def everything(dat, pkg, force, rec=None, opt=None):  # downloads and builds given package along with all of its dependencies
     pkg_list = list_deps(dat, pkg, rec, opt)
     for item in pkg_list:
         if item in dat:
-            build_pkg(dat, item)
+            build_pkg(dat, item, force)
         else:
             print('\33[31m"{}" package not found in database - skipping to the next package\33[0m'.format(item))
 
@@ -139,10 +138,10 @@ def list_commands(dat, pkg):  # list the installation commands for a given BLFS 
     return commands_list
 
 
-def build_pkg(dat, pkg):  # install a given BLFS package on the system
+def build_pkg(dat, pkg, force):  # install a given BLFS package on the system
     search(dat, pkg)
     download_deps(dat, [pkg], extensions)
-    if pkg in installed:
+    if pkg in installed and force:
         print('\33[31m{} has already been installed - skipping\33[0m'.format(pkg))
         return
     else:
@@ -252,6 +251,7 @@ def parser(dat):  # main parser function
     parser.add_argument('-c', '--commands', help=messages[11], metavar='PACKAGE', default=False)
     parser.add_argument('-d', '--download', help=messages[12], metavar='PACKAGE')
     parser.add_argument('-e', '--everything', help=messages[19], metavar='PACKAGE')
+    parser.add_argument('-f', '--force', help=messages[21], action='store_true')
     parser.add_argument('-l', '--list', help=messages[13], metavar='PACKAGE', default=False)
     parser.add_argument('-o', '--optional', help=messages[14], action='store_true')
     parser.add_argument('-r', '--recommended', help=messages[15], action='store_true')
@@ -261,7 +261,7 @@ def parser(dat):  # main parser function
     if args.download:
         download_deps(dat, list_deps(dat, args.download, args.recommended, args.optional), extensions)
     elif args.everything:
-        everything(dat, args.everything, args.recommended, args.optional)
+        everything(dat, args.everything, args.force, args.recommended, args.optional)
     elif args.list:
         output(list_deps(dat, args.list, args.recommended, args.optional), True)
     elif args.commands:
@@ -269,7 +269,7 @@ def parser(dat):  # main parser function
     elif args.all:
         download_deps(dat, dat, extensions)
     elif args.build:
-        build_pkg(dat, args.build)
+        build_pkg(dat, args.build, args.force)
     elif args.search:
         search(dat, args.search)
     else:
@@ -293,7 +293,6 @@ if not os.path.exists('installed'):
         f.write('')
 
 with open('installed', 'r') as i:
-    installed = i.readlines()
-    installed = [i.strip() for i in installed]
+    installed = [line.rstrip() for line in i]
 
 parser(data)

@@ -50,7 +50,7 @@ Alternatively, you can just use the included ```dependencies.json``` file. At th
 The main script ```deps.py```, has many options to list, download, list commands, or install a package.
 Note: once again it is *highly* recommended that you always run this as ```root```!
 
-Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-l PACKAGE] [-o] [-r]```
+Main usage: ```python deps.py [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-e PACKAGE] [-f] [-l PACKAGE] [-o] [-r] [-s PACKAGE]```
 
 Note: It is recommended to follow along the installation process in the BLFS book. This tool is not perfect and I have not tested every BLFS package. There are still some issues with circular dependencies, and at the moment it is best to moniter everything to prevent problems. Additionally, the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Furthermore, some packages require further kernel configuration (and recompilation) as a prerequisite for installation.
 
@@ -66,6 +66,8 @@ Note: It is recommended to follow along the installation process in the BLFS boo
   -d PACKAGE, --download PACKAGE    Downloads a given BLFS package along with all of its dependencies.
 
   -e PACKAGE, --everything PACKAGE  Downloads and installs the given package with all of it's dependencies.
+
+  -f, --force                       Force package installation even though it is already installed
 
   -l PACKAGE, --list PACKAGE        Lists all of the dependencies for a given BLFS package in order of installation.
 
