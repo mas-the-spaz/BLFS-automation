@@ -42,12 +42,16 @@ extensions = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 circ_exceptions = ['cups-filters-1.28.7']
 
 def cleanup(signum, frame):
+    print(os.getcwd())
     os.chdir(script_path)
+    if os.path.exists(PACKAGE_DIR):
+        rmtree(PACKAGE_DIR)
+
     with open('installed', 'w') as install_file:
         for i in installed:
             install_file.write('{}\n'.format(i))
     print('\33[31mInstallation interrupted - exiting.\33[0m')
-    exit(0)
+    exit(1)
 
 signal.signal(signal.SIGINT, cleanup)
 
@@ -88,7 +92,7 @@ def MD5_check(hash, file):  # verify file hash
     if hash != file_hash:
         print(messages[16])
         os.remove(file)
-        exit
+        exit()
 
 
 def search(dat, pkg):
@@ -102,7 +106,7 @@ def search(dat, pkg):
     for item in dat.keys():
         if pkg.lower() in item.lower():
             print('Did you mean {}?'.format(item))
-    exit
+    exit()
 
 
 def cmd_run(command):
@@ -162,7 +166,8 @@ def build_pkg(dat, pkg):  # install a given BLFS package on the system
                 os.chdir(_pkg)
 
         commands = list_commands(dat, pkg)
-        package_dir = os.getcwd()
+        global PACKAGE_DIR
+        PACKAGE_DIR = os.getcwd()
         for command in commands:
             install_query = input('\33[32mShould I run "{}"? <Y/n/m (to modify)>\33[0m\n'.format(command))
             if install_query.lower() == 'n':
@@ -174,7 +179,7 @@ def build_pkg(dat, pkg):  # install a given BLFS package on the system
                 cmd_run(command)
         installed.append(pkg)
         os.chdir(default_download_path)
-        rmtree(package_dir)
+        rmtree(PACKAGE_DIR)
 
 
 def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
@@ -202,29 +207,28 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
 
 
 def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
-    types = []
+    pkg_list = [pkg]
     if not pkg in dat:
         search(dat, pkg)
-    else:
-        types.append('required')
-    if rec:
-        types.append('recommended')
-    elif opt:
-        types.extend(['recommended', 'optional'])
-    return get_child(dat, [pkg], types)
+    else:    
+        if rec:
+            pkg_list.extend([x for x in dat[pkg]['Dependencies']['recommended']])
+        elif opt:
+            pkg_list.extend([x for x in dat[pkg]['Dependencies']['recommended']])
+            pkg_list.extend([x for x in dat[pkg]['Dependencies']['optional']])
+        return get_child(dat, pkg_list)
 
 
-def get_child(dat, pkg_list, types):  # recursively lists all dependencies for a given package
+def get_child(dat, pkg_list):  # recursively lists all dependencies for a given package
     dup_list = []
     original = pkg_list[0]
     for pkg in pkg_list:
         if pkg in dat:
-            for index in types:
-                for dep in dat[pkg]['Dependencies'][index]:
-                    if not dep in pkg_list:  # prevents circular dependency problems
-                        pkg_list.append(dep)
-                    else:  # if package is already in list, need to move it to end of list
-                        dup_list.append(dep)             
+            for dep in dat[pkg]['Dependencies']['required']:
+                if not dep in pkg_list:  # prevents circular dependency problems
+                    pkg_list.append(dep)
+                else:  # if package is already in list, need to move it to end of list
+                    dup_list.append(dep)             
     pkg_list[:] = [x for x in pkg_list if x not in dup_list]
     pkg_list.extend(list(dict.fromkeys(dup_list)))
     pkg_list.insert(0, pkg_list.pop(pkg_list.index(original)))
