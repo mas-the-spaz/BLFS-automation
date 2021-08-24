@@ -1,11 +1,14 @@
 #!/usr/bin/python3
 
+from os import link
 import requests
 from requests.adapters import HTTPAdapter
 from urllib3.util import Retry
 from bs4 import BeautifulSoup as Bs4
 import json
 import re
+from multiprocessing.pool import ThreadPool
+
 
 
 '''
@@ -110,16 +113,11 @@ print("Collecting base URLs....")
 links = list(map(lambda v: BASEURL + v['href'] if not '#' in v['href'] else None, el.find_all('a', href=True)))
 
 
-for a in list(filter(None, links)):
-    pkg_count += 1
-    try:
-        res = url_get(a)
-    except requests.ConnectionError as e:
-        print("OOPS!! Connection Error. Make sure you are connected to Internet. Technical Details given below.\n")
-        print(str(e))  
-        continue
+threads = ThreadPool(10).imap_unordered(url_get, list(filter(None, links)))
 
-    soup = Bs4(res.text, 'html.parser')  # get webpage contents
+for a in threads:
+    pkg_count += 1
+    soup = Bs4(a.text, 'html.parser')  # get webpage contents
 
     if len(soup.find_all('div', class_='sect2')) > 1:  # if soup is module instead of std package
         for module in soup.find_all('div', class_='sect2'):
