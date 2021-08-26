@@ -86,7 +86,7 @@ def change_dir(cmd):
     return ''
 
 
-def MD5_check(hash, file):  # verify file hash
+def MD5_check(file, hash):  # verify file hash
     file_hash = hashlib.md5(open(file,'rb').read()).hexdigest()
     if hash != file_hash:
         print(messages[16])
@@ -195,8 +195,8 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
                             print('\n\33[32mDownloading: {0}\33[0m\n'.format(url))
                             wget.download(url, os.path.basename(url))
                             print('\n')
-                            if index > len(dat[pkg]['Hashes']):
-                                MD5_check(dat[pkg]['Hashes'][index], os.path.basename(url))
+                            for foo in list(zip(dat[pkg]["url"], dat[pkg]['Hashes'])):
+                                MD5_check(os.path.basename(foo[0]), foo[1])
                         else:
                             print('\33[31m{} already has been downloaded\33[0m'.format(os.path.basename(url)))
         elif pkg in exceptions:
@@ -229,6 +229,33 @@ def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be r
     pkg_list.insert(0, pkg_list.pop(pkg_list.index(pkg)))  # ensure that main package is last (insurance for circular dependency problem)
     pkg_list.reverse()
     return pkg_list
+
+
+
+# def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
+#     pkg_list = [pkg]
+#     dup_list = [] 
+#     if not pkg in dat:
+#         search(dat, pkg)
+#     else:    
+#         if rec:
+#             pkg_list.extend([x for x in dat[pkg]['Dependencies']['recommended']])
+#         elif opt:
+#             pkg_list.extend([x for x in dat[pkg]['Dependencies']['recommended']])
+#             pkg_list.extend([x for x in dat[pkg]['Dependencies']['optional']])
+#     i = 0
+#     while i < len(pkg_list):
+#         if pkg_list[i] in dat:
+#             for dep in dat[pkg_list[i]]['Dependencies']['required']:
+#                 if not dep in pkg_list:  # prevents circular dependency problems
+#                     pkg_list.append(dep)
+#                 else:  # if package is already in list, need to move it to end of list  
+#                     pkg_list[:] = [x for x in pkg_list if x != dep] 
+#                     pkg_list.append(dep) 
+#         i += 1
+#     pkg_list.insert(0, pkg_list.pop(pkg_list.index(pkg)))  # ensure that main package is last (insurance for circular dependency problem)
+#     pkg_list.reverse()
+#     return pkg_list
 
 
 def output(lst, reverse):  # output function
