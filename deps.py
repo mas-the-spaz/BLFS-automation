@@ -207,6 +207,7 @@ def download_deps(dat, dlist, exts):  # download all urls in dlist (can be all u
 
 def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
     pkg_list = [pkg]
+    dup_list = [] 
     if not pkg in dat:
         search(dat, pkg)
     else:    
@@ -215,12 +216,7 @@ def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be r
         elif opt:
             pkg_list.extend([x for x in dat[pkg]['Dependencies']['recommended']])
             pkg_list.extend([x for x in dat[pkg]['Dependencies']['optional']])
-        return get_child(dat, pkg_list)
 
-
-def get_child(dat, pkg_list):  # recursively lists all dependencies for a given package
-    dup_list = []
-    original = pkg_list[0]
     for pkg in pkg_list:
         if pkg in dat:
             for dep in dat[pkg]['Dependencies']['required']:
@@ -230,7 +226,7 @@ def get_child(dat, pkg_list):  # recursively lists all dependencies for a given 
                     dup_list.append(dep)             
     pkg_list[:] = [x for x in pkg_list if x not in dup_list]
     pkg_list.extend(list(dict.fromkeys(dup_list)))
-    pkg_list.insert(0, pkg_list.pop(pkg_list.index(original)))
+    pkg_list.insert(0, pkg_list.pop(pkg_list.index(pkg)))  # ensure that main package is last (insurance for circular dependency problem)
     pkg_list.reverse()
     return pkg_list
 
