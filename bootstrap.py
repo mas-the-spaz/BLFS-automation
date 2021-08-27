@@ -100,7 +100,7 @@ def package_collect(package, tag_class, tag):
             for f in d.find_all('p'):
                 if 'Download MD5 sum:' in f.getText(): 
                     hashes.extend(f.getText().split()[-1:])
-    
+
     print("Downloading info for {0}".format(name))
     scheme[name] = {'name': name, 'url': FTP_URL_filter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf, 'type': 'BLFS'}
 
