@@ -219,11 +219,8 @@ def list_deps(dat, pkg, rec=None, opt=None):  # lists all dependencies (can be r
     for p in pkg_list:
         if p in dat:
             for dep in dat[p]['Dependencies']['required']:
-                if not dep in pkg_list:  # prevents circular dependency problems
-                    pkg_list.append(dep)
-                else:  # if package is already in list, need to move it to end of list
-                    pkg_list[:] = [x for x in pkg_list if x != dep]
-                    pkg_list.append(dep)           
+                pkg_list[:] = [x for x in pkg_list if x != dep] # prevents circular dependency problems
+                pkg_list.append(dep)                          
     pkg_list.insert(0, pkg_list.pop(pkg_list.index(pkg)))  # ensure that main package is last (insurance for circular dependency problem)
     pkg_list.reverse()
     return pkg_list
