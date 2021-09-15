@@ -44,7 +44,7 @@ It is recommended that the main script ```deps.py``` should always be run as roo
 First build the latest BLFS package database by running ```# python3 bootstrap.py```.
 This will ensure that you have a database with the latest BLFS version.
 
-Alternatively, you can just use the included ```dependencies.json``` file. At the time of writing, the version is BLFS 10.1.
+Alternatively, you can just use the included ```dependencies.json``` file. At the time of writing, the version is BLFS 11.0.
 
  
 The main script ```deps.py```, has many options to list, download, list commands, or install a package.
