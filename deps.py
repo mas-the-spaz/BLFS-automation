@@ -47,7 +47,7 @@ def cleanup(signum, frame):  # ctrl-c handler
     if os.path.exists(PACKAGE_DIR):
         rmtree(PACKAGE_DIR)
 
-    with open('installed', 'w') as install_file:
+    with open('.installed', 'w') as install_file:
         for i in installed:
             install_file.write('{}\n'.format(i))
     print(colored('Installation interrupted - exiting.', 'red'))
@@ -264,23 +264,23 @@ def parser(dat):  # main parser function
         parser.print_help()
 
     os.chdir(SCRIPT_PATH)
-    with open('installed', 'w') as install_file:
+    with open('.installed', 'w') as install_file:
         for i in installed:
             install_file.write('{}\n'.format(i))
 
 
 if __name__ == "__main__":
-    if not os.path.exists('dependencies.json'):
+    try:
+        with open('dependencies.json', 'r') as scheme:
+            data = json.load(scheme)
+    except FileNotFoundError:
         print(MESSAGES[0])
         exit()
 
-    with open('dependencies.json', 'r') as scheme:
-        data = json.load(scheme)
+    try:
+        with open('.installed', 'r') as i:
+            installed = [line.rstrip() for line in i]
+    except FileNotFoundError:
+        installed = []
 
-    if not os.path.exists('installed'):
-        with open('installed', 'w') as f:
-            f.write('')
-
-    with open('installed', 'r') as i:
-        installed = [line.rstrip() for line in i]
     parser(data)
