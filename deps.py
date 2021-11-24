@@ -70,8 +70,7 @@ def check_dir():  # download directory housekeeping function
         try:
             os.mkdir(default_download_path, 0o755)
         except OSError:
-            print(MESSAGES[3])
-            exit(1)
+            raise OSError(MESSSAGES[3])
         else:
             print(MESSAGES[4])
     else:
@@ -90,9 +89,8 @@ def change_dir(cmd):  # change dir when command contains 'cd'
 def MD5_check(file, hash):  # verify file hash
     file_hash = hashlib.md5(open(file,'rb').read()).hexdigest()
     if hash != file_hash:
-        print(MESSAGES[16])
         os.remove(file)
-        exit()
+        raise OSError(MESSAGES[16])
 
 
 def cmd_run(command):  # run command in shell
@@ -117,8 +115,7 @@ class Actions(object):
 
     def search(self, pkg):
         if len(pkg) < 3:
-            print(MESSAGES[1])
-            exit()
+            raise NameError(MESSAGES[1])
         if pkg in self.database:
             print('{} package exists in database.'.format(pkg))
             return
@@ -126,13 +123,11 @@ class Actions(object):
         for item in self.database.keys():
             if pkg.lower() in item.lower():
                 print('Did you mean {}?'.format(item))
-        exit()
 
     def list_commands(self, pkg):  # list the installation commands for a given BLFS package
         self.search(pkg)
         if self.database[pkg]['type'] != 'BLFS':  # if this is an external package
             print('"{0}" {1} {2}'.format(pkg, MESSAGES[18], self.database[pkg]['url'][0]))
-            exit()
         elif self.database[pkg]['kconf']:
             print(MESSAGES[17])
             for conf in self.database[pkg]['kconf']:
@@ -194,7 +189,6 @@ class Actions(object):
                 for _, url in enumerate(self.database[pkg]['url']):
                     if self.database[pkg]['type'] != 'BLFS':
                         print('"{0}" {1} {2}'.format(pkg, MESSAGES[18], self.database[pkg]['url'][0]))
-                        exit()
                     for i in exts:
                         if i in url:
                             if not os.path.isfile(os.path.basename(url)):
@@ -274,8 +268,7 @@ if __name__ == "__main__":
         with open('dependencies.json', 'r') as scheme:
             data = json.load(scheme)
     except FileNotFoundError:
-        print(MESSAGES[0])
-        exit()
+        raise FileNotFoundError(MESSAGES[0])
 
     try:
         with open('.installed', 'r') as i:
