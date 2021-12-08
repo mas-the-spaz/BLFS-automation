@@ -18,8 +18,10 @@ default_download_path = '/blfs_sources/'
 # change above line for the default download location for the packages
 
 SCRIPT_PATH = os.getcwd()
+# consider os.path.dirname(__file__)
 
-EXCEPTIONS = ['Xorg Libraries', 'Xorg Applications', 'Xorg Fonts', 'Xorg Legacy']
+EXCEPTIONS = ['Xorg Libraries', 'Xorg Applications',
+              'Xorg Fonts', 'Xorg Legacy']
 
 MESSAGES = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild the dependency database.\n",
             "The inputted value needs to be at least 3 characters.", "Download directory not found - creating one.\n",
@@ -34,13 +36,14 @@ MESSAGES = ["Dependencies.json not found! Try running 'bootstrap.py' to rebuild 
             "Lists all of the dependencies for a given BLFS package in order of installation.\n",
             "Also list/download optional packages.\n",
             "Also list/download recommended packages.\n", "Downloaded file does not match the MD5 hash!\n",
-            "This package requires some kernel configuration before installation.\n", 
+            "This package requires some kernel configuration before installation.\n",
             "is not a BLFS package, you can download it at", "Downloads and installs thegiven package with all of it's dependencies.\n",
             "Search for a given package.\n", "Force package installation even though it is already installed\n"]
 
 EXTENSIONS = ['.bz2', '.tar.xz', '.zip', '.tar.gz', '.patch', '.tgz']
 
 CIRC_EXCEPTIONS = ['cups-filters-1.28.7']
+
 
 def cleanup(signum, frame):  # ctrl-c handler
     os.chdir(SCRIPT_PATH)
@@ -53,15 +56,16 @@ def cleanup(signum, frame):  # ctrl-c handler
     print(colored('Installation interrupted - exiting.', 'red'))
     exit(1)
 
+
 signal.signal(signal.SIGINT, cleanup)
 
 
 def rlinput(prompt, prefill=''):  # makes command modifiable
-   readline.set_startup_hook(lambda: readline.insert_text(prefill))
-   try:
-      return input(prompt)
-   finally:
-      readline.set_startup_hook()
+    readline.set_startup_hook(lambda: readline.insert_text(prefill))
+    try:
+        return input(prompt)
+    finally:
+        readline.set_startup_hook()
 
 
 def check_dir():  # download directory housekeeping function
@@ -70,7 +74,7 @@ def check_dir():  # download directory housekeeping function
         try:
             os.mkdir(default_download_path, 0o755)
         except OSError:
-            raise OSError(MESSSAGES[3])
+            raise OSError(MESSAGES[3])
         else:
             print(MESSAGES[4])
     else:
@@ -87,7 +91,7 @@ def change_dir(cmd):  # change dir when command contains 'cd'
 
 
 def MD5_check(file, hash):  # verify file hash
-    file_hash = hashlib.md5(open(file,'rb').read()).hexdigest()
+    file_hash = hashlib.md5(open(file, 'rb').read()).hexdigest()
     if hash != file_hash:
         os.remove(file)
         raise OSError(MESSAGES[16])
@@ -100,13 +104,12 @@ def cmd_run(command):  # run command in shell
 
 
 def output(lst, reverse):  # output function
-        if reverse:
-            print(MESSAGES[6])
-        else:
-            pass
-        for thing in lst:
-            print(thing)
-
+    if reverse:
+        print(MESSAGES[6])
+    else:
+        pass
+    for thing in lst:
+        print(thing)
 
 
 class Actions(object):
@@ -127,7 +130,8 @@ class Actions(object):
     def list_commands(self, pkg):  # list the installation commands for a given BLFS package
         self.search(pkg)
         if self.database[pkg]['type'] != 'BLFS':  # if this is an external package
-            print('"{0}" {1} {2}'.format(pkg, MESSAGES[18], self.database[pkg]['url'][0]))
+            print('"{0}" {1} {2}'.format(
+                pkg, MESSAGES[18], self.database[pkg]['url'][0]))
         elif self.database[pkg]['kconf']:
             print(MESSAGES[17])
             for conf in self.database[pkg]['kconf']:
@@ -136,7 +140,6 @@ class Actions(object):
         print(colored('Listing commands for {}\n'.format(pkg), "green"))
         commands_list = list(map(lambda x: x, self.database[pkg]['Commands']))
         return commands_list
-
 
     def build_pkg(self, pkg, force):  # install a given BLFS package on the system
         self.search(pkg)
@@ -155,9 +158,12 @@ class Actions(object):
 
                 if zipfile.is_zipfile(os.path.basename(file_to_extract)):
                     with zipfile.ZipFile(os.path.basename(file_to_extract), 'r') as zip_ref:
-                        print(os.path.splitext(os.path.basename(file_to_extract))[0])
-                        zip_ref.extractall(os.path.splitext(os.path.basename(file_to_extract))[0])
-                        os.chdir(os.path.splitext(os.path.basename(file_to_extract))[0])
+                        print(os.path.splitext(
+                            os.path.basename(file_to_extract))[0])
+                        zip_ref.extractall(os.path.splitext(
+                            os.path.basename(file_to_extract))[0])
+                        os.chdir(os.path.splitext(
+                            os.path.basename(file_to_extract))[0])
             else:
                 _pkg = pkg.replace(' ', '_')
                 if not os.path.exists(default_download_path + _pkg):
@@ -168,7 +174,8 @@ class Actions(object):
             global PACKAGE_DIR
             PACKAGE_DIR = os.getcwd()
             for command in commands:
-                install_query = input('Should I run "{}"? <Y/n/m (to modify)>'.format(command))
+                install_query = input(
+                    'Should I run "{}"? <Y/n/m (to modify)>'.format(command))
                 if install_query.lower() == 'n':
                     pass
                 elif install_query.lower() == 'm':
@@ -181,47 +188,55 @@ class Actions(object):
             os.chdir(default_download_path)
             rmtree(PACKAGE_DIR)
 
-
-    def download_deps(self, dlist, exts):  # download all urls in dlist (can be all urls or just some dependencies)
+    # download all urls in dlist (can be all urls or just some dependencies)
+    def download_deps(self, dlist, exts):
         check_dir()
         for pkg in dlist:
             if pkg in self.database and pkg not in EXCEPTIONS:
                 for _, url in enumerate(self.database[pkg]['url']):
                     if self.database[pkg]['type'] != 'BLFS':
-                        print('"{0}" {1} {2}'.format(pkg, MESSAGES[18], self.database[pkg]['url'][0]))
+                        print('"{0}" {1} {2}'.format(
+                            pkg, MESSAGES[18], self.database[pkg]['url'][0]))
                     for i in exts:
                         if i in url:
                             if not os.path.isfile(os.path.basename(url)):
-                                print(colored('\nDownloading: {0}\n'.format(url), "green"))
+                                print(
+                                    colored('\nDownloading: {0}\n'.format(url), "green"))
                                 wget.download(url, os.path.basename(url))
                                 print('\n')
                                 for foo in list(zip(self.database[pkg]["url"], self.database[pkg]['Hashes'])):
                                     MD5_check(os.path.basename(foo[0]), foo[1])
                             else:
-                                print(colored('{} already has been downloaded'.format(os.path.basename(url), "red")))
+                                print(colored('{} already has been downloaded'.format(
+                                    os.path.basename(url), "red")))
             elif pkg in EXCEPTIONS:
                 print('{} package must be installed manually.'.format(pkg))
             else:
                 print(colored('{0} "{1}"'.format(MESSAGES[1], pkg), "red"))
 
-
-    def list_deps(self, pkg, rec=None, opt=None):  # lists all dependencies (can be required, recommended, and/or optional)
+    # lists all dependencies (can be required, recommended, and/or optional)
+    def list_deps(self, pkg, rec=None, opt=None):
         pkg_list = [pkg]
         if not pkg in self.database:
             self.search(pkg)
-        else:    
+        else:
             if rec:
-                pkg_list.extend([x for x in self.database[pkg]['Dependencies']['recommended']])
+                pkg_list.extend([x for x in self.database[pkg]
+                                ['Dependencies']['recommended']])
             elif opt:
-                pkg_list.extend([x for x in self.database[pkg]['Dependencies']['recommended']])
-                pkg_list.extend([x for x in self.database[pkg]['Dependencies']['optional']])
+                pkg_list.extend([x for x in self.database[pkg]
+                                ['Dependencies']['recommended']])
+                pkg_list.extend([x for x in self.database[pkg]
+                                ['Dependencies']['optional']])
 
         for p in pkg_list:
             if p in self.database:
                 for dep in self.database[p]['Dependencies']['required']:
-                    pkg_list[:] = [x for x in pkg_list if x != dep] # prevents circular dependency problems
-                    pkg_list.append(dep)                          
-        pkg_list.insert(0, pkg_list.pop(pkg_list.index(pkg)))  # ensure that main package is last (insurance for circular dependency problem)
+                    # prevents circular dependency problems
+                    pkg_list[:] = [x for x in pkg_list if x != dep]
+                    pkg_list.append(dep)
+        # ensure that main package is last (insurance for circular dependency problem)
+        pkg_list.insert(0, pkg_list.pop(pkg_list.index(pkg)))
         pkg_list.reverse()
         return pkg_list
 
@@ -229,13 +244,20 @@ class Actions(object):
 def parser(dat):  # main parser function
     parser = argparse.ArgumentParser(description=MESSAGES[8], prog='deps.py')
     parser.add_argument('-a', '--all', help=MESSAGES[9], action='store_true')
-    parser.add_argument('-b', '--build', help=MESSAGES[10], metavar='PACKAGE', default=False)
-    parser.add_argument('-c', '--commands', help=MESSAGES[11], metavar='PACKAGE', default=False)
-    parser.add_argument('-d', '--download', help=MESSAGES[12], metavar='PACKAGE')
-    parser.add_argument('-f', '--force', help=MESSAGES[21], action='store_true')
-    parser.add_argument('-l', '--list', help=MESSAGES[13], metavar='PACKAGE', default=False)
-    parser.add_argument('-o', '--optional', help=MESSAGES[14], action='store_true')
-    parser.add_argument('-r', '--recommended', help=MESSAGES[15], action='store_true')
+    parser.add_argument(
+        '-b', '--build', help=MESSAGES[10], metavar='PACKAGE', default=False)
+    parser.add_argument('-c', '--commands',
+                        help=MESSAGES[11], metavar='PACKAGE', default=False)
+    parser.add_argument('-d', '--download',
+                        help=MESSAGES[12], metavar='PACKAGE')
+    parser.add_argument(
+        '-f', '--force', help=MESSAGES[21], action='store_true')
+    parser.add_argument(
+        '-l', '--list', help=MESSAGES[13], metavar='PACKAGE', default=False)
+    parser.add_argument('-o', '--optional',
+                        help=MESSAGES[14], action='store_true')
+    parser.add_argument('-r', '--recommended',
+                        help=MESSAGES[15], action='store_true')
     parser.add_argument('-s', '--search', help=MESSAGES[20], metavar='PACKAGE')
     args = parser.parse_args()
 
@@ -243,7 +265,8 @@ def parser(dat):  # main parser function
     action = Actions(dat)
 
     if args.download:
-        action.download_deps(action.list_deps(args.download, args.recommended, args.optional), EXTENSIONS)
+        action.download_deps(action.list_deps(
+            args.download, args.recommended, args.optional), EXTENSIONS)
     elif args.list:
         output(action.list_deps(args.list, args.recommended, args.optional), True)
     elif args.commands:

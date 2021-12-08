@@ -10,7 +10,6 @@ import re
 from multiprocessing.pool import ThreadPool
 
 
-
 '''
 JSON scheme
 {
@@ -29,32 +28,35 @@ JSON scheme
 }
 '''
 
-BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable/'  # URL containing all package urls
-#BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/' # uncomment this line if you are using the Systemd BLFS build.
+# URL containing all package urls
+BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable/'
+# BASEURL = 'https://www.linuxfromscratch.org/blfs/view/stable-systemd/' # uncomment this line if you are using the Systemd BLFS build.
 
 scheme = {}
 pkg_count = 0
 headers = {
-    'User-Agent':'Mozilla/5.0 (Windows NT x.y; rv:10.0) Gecko/20100101 Firefox/10.0'
+    'User-Agent': 'Mozilla/5.0 (Windows NT x.y; rv:10.0) Gecko/20100101 Firefox/10.0'
 }
 
 
 def strip_text(string):
     return re.sub(r'\n\s+', ' ', string)
 
+
 def url_get(url):
     s = requests.Session()
 
     retries = Retry(total=5,
                     backoff_factor=0.1,
-                    status_forcelist=[ 500, 502, 503, 504 ])
+                    status_forcelist=[500, 502, 503, 504])
 
     s.mount('http://', HTTPAdapter(max_retries=retries))
     s.mount('https://', HTTPAdapter(max_retries=retries))
     return s.get(url.rstrip(), headers=headers, timeout=30)
 
 
-def FTP_URL_filter(URL_list):  # removes ftp links from url list, but only if they are duplicates
+# removes ftp links from url list, but only if they are duplicates
+def FTP_URL_filter(URL_list):
     newlist = []
     i = 0
     while i < len(URL_list):
@@ -69,7 +71,8 @@ def FTP_URL_filter(URL_list):  # removes ftp links from url list, but only if th
 
 
 def package_collect(package, tag_class, tag):
-    name = strip_text(package.find(tag, class_=tag_class).text).strip()  # string of name
+    name = strip_text(package.find(
+        tag, class_=tag_class).text).strip()  # string of name
 
     deps = {'required': [], 'recommended': [], 'optional': []}
     for c in deps:
@@ -85,32 +88,37 @@ def package_collect(package, tag_class, tag):
                     "optional": []
                 }, 'Commands': [], 'type': 'external'}  # manually add url to scheme
 
+    commands = list(
+        map(lambda d: d.text, package.find_all('kbd', class_='command')))
 
-    commands = list(map(lambda d: d.text , package.find_all('kbd', class_='command')))
-
-    kconf = list(map(lambda a: a.text, package.select('div.kernel pre.screen code.literal'))) 
+    kconf = list(map(lambda a: a.text, package.select(
+        'div.kernel pre.screen code.literal')))
 
     urls = []
     hashes = []
-    u = list(map(lambda x: x['href'], package.select('div.itemizedlist a.ulink'))) 
+    u = list(map(lambda x: x['href'], package.select(
+        'div.itemizedlist a.ulink')))
     if package.find('div', class_='itemizedlist'):  # if package has urls add to array
         for d in package.find_all('div', class_='itemizedlist'):
-            for e in d.find_all('a', class_='ulink'):  
+            for e in d.find_all('a', class_='ulink'):
                 urls.append(e['href'])
             for f in d.find_all('p'):
-                if 'Download MD5 sum:' in f.getText(): 
+                if 'Download MD5 sum:' in f.getText():
                     hashes.extend(f.getText().split()[-1:])
 
     print("Downloading info for {0}".format(name))
-    scheme[name] = {'name': name, 'url': FTP_URL_filter(urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf, 'type': 'BLFS'}
+    scheme[name] = {'name': name, 'url': FTP_URL_filter(
+        urls), 'Dependencies': deps, 'Commands': commands, 'Hashes': hashes, 'kconf': kconf, 'type': 'BLFS'}
 
 
 res = url_get(BASEURL + 'longindex.html')  # Begin...
 soup = Bs4(res.text, 'html.parser')
-el = soup.find('a', attrs={"id": "package-index"}).parent.next_sibling.next_sibling
+el = soup.find('a', attrs={"id": "package-index"}
+               ).parent.next_sibling.next_sibling
 print("Collecting base URLs....")
 # for every url... check if has href... if not add to array
-links = list(map(lambda v: BASEURL + v['href'] if not '#' in v['href'] else None, el.find_all('a', href=True)))
+links = list(map(lambda v: BASEURL +
+             v['href'] if not '#' in v['href'] else None, el.find_all('a', href=True)))
 
 
 threads = ThreadPool(10).imap_unordered(url_get, list(filter(None, links)))
@@ -122,7 +130,8 @@ for a in threads:
     if len(soup.find_all('div', class_='sect2')) > 1:  # if soup is module instead of std package
         for module in soup.find_all('div', class_='sect2'):
             if module.find_all('div', class_='package'):  # limit to modules only
-                package_collect(module, "sect2", "h2")  # call function on module
+                # call function on module
+                package_collect(module, "sect2", "h2")
     else:
         package_collect(soup, "sect1", "h1")  # call function on std package
 
