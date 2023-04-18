@@ -22,8 +22,8 @@ JSON scheme
             'Optional': ['first', 'second']               ---list 
             }, 
         'Commands': ['Installation commands'],            ---list
-        'Hashes': ['9801095c42bba12edebd1902bcf0a990'],   ---list
-        'Kconf': ['kernel configuration settings']        ---list
+        'hashes': ['9801095c42bba12edebd1902bcf0a990'],   ---list
+        'kconf': ['kernel configuration settings']        ---list
         }
 }
 '''
@@ -145,5 +145,5 @@ else:
 with open('dependencies.json', 'w+') as b:  # dump info to json file
     json.dump(scheme, b)
 
-with open('installed', 'w') as i:
+with open('.installed', 'w') as i:
     i.write('')

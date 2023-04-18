@@ -14,7 +14,7 @@ import readline
 from termcolor import colored
 from shutil import rmtree
 
-default_download_path = '/blfs_sources/'
+DEFAULT_DOWNLOAD_PATH = '/blfs_sources/'
 # change above line for the default download location for the packages
 
 SCRIPT_PATH = os.getcwd()
@@ -69,17 +69,17 @@ def rlinput(prompt, prefill=''):  # makes command modifiable
 
 
 def check_dir():  # download directory housekeeping function
-    if not os.path.exists(default_download_path):
+    if not os.path.exists(DEFAULT_DOWNLOAD_PATH):
         print(MESSAGES[2])
         try:
-            os.mkdir(default_download_path, 0o755)
+            os.mkdir(DEFAULT_DOWNLOAD_PATH, 0o755)
         except OSError:
             raise OSError(MESSAGES[3])
         else:
             print(MESSAGES[4])
     else:
         print(MESSAGES[5])
-    os.chdir(default_download_path)
+    os.chdir(DEFAULT_DOWNLOAD_PATH)
     return
 
 
@@ -185,7 +185,7 @@ class Actions(object):
                             os.path.basename(file_to_extract))[0])
             else:
                 _pkg = pkg.replace(' ', '_')
-                if not os.path.exists(default_download_path + _pkg):
+                if not os.path.exists(DEFAULT_DOWNLOAD_PATH + _pkg):
                     os.mkdir(_pkg, 0o755)
                     os.chdir(_pkg)
 
@@ -204,7 +204,7 @@ class Actions(object):
                     cmd_run(command)
             if not force:
                 installed.append(pkg)
-            os.chdir(default_download_path)
+            os.chdir(DEFAULT_DOWNLOAD_PATH)
             rmtree(PACKAGE_DIR)
 
     # download all urls in dlist (can be all urls or just some dependencies)
