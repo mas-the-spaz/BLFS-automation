@@ -1,6 +1,11 @@
-requests
-bs4
-python3-wget
-wget
-urllib3
-termcolor
+beautifulsoup4==4.12.2
+blfs-pm==1.0.0
+bs4==0.0.1
+certifi==2022.12.7
+charset-normalizer==3.1.0
+idna==3.4
+requests==2.28.2
+soupsieve==2.4
+termcolor==2.2.0
+urllib3==1.26.15
+wget==3.2
