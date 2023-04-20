@@ -19,16 +19,10 @@ To get a local copy up and running follow these steps.
 </ul>
 
 ### Installation:
-1. Clone this repository:
-```
-git clone https://github.com/ahron-maslin/BLFS-automation.git 
-```
 
-2. Install the requirements:
 ```
-sudo pip install -r requirements.txt
+pip install blfs-pm
 ```
-Note: Installing the requirements, must be done as root - this fixes a bug where the ```wget``` module does not get imported.
 
 ## Usage:
 It is recommended that the package should always be run as root, in order to prevent errors when installing packages to the system.
@@ -37,9 +31,9 @@ It is recommended that the package should always be run as root, in order to pre
 This package has many options to list, download, list commands, or install a given package.
 Note: once again it is *highly* recommended that you always run this as ```root```!
 
-Main usage: ```blfs-pm [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-f] [-l PACKAGE] [-o] [-r] [-s PACKAGE] [--systemd]```
+Usage: ```blfs-pm [-h] [-a] [-b PACKAGE] [-c PACKAGE] [-d PACKAGE] [-f] [-l PACKAGE] [-o] [-r] [-s PACKAGE] [--systemd]```
 
-Note: It is recommended to follow along the installation process in the BLFS book. ```blfs-m``` is not perfect and I have not tested every BLFS package. There are still some issues with circular dependencies, and at the moment it is best to monitor everything to prevent problems. Additionally, the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Furthermore, some packages require further kernel configuration (and recompilation) as a prerequisite for installation.
+Note: It is recommended to follow along the installation process in the BLFS book. ```blfs-pm``` is not perfect and I have not tested every BLFS package. There are still some issues with circular dependencies, and at the moment it is best to monitor everything to prevent problems. Additionally, the ```-b (build)``` option will prompt the user to run EVERY command provided for the specific package. Some commands can only be run if optional dependencies are installed (like Texlive, Docbook, etc.). Furthermore, some packages require further kernel configuration (and recompilation) as a prerequisite for installation.
 
 ```
   -h, --help                        show this help message and exit
