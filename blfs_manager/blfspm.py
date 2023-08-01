@@ -4,10 +4,12 @@ import logging
 
 from .utils import load_db, load_installed_log, print_commands, print_deps
 from .commands import Commands
+from blfs_manager import __VERSION__, __PKGNAME__
 
 
 def main():
     logging.basicConfig(level=logging.INFO, format='%(message)s')
+    logging.info(f'{__PKGNAME__} {__VERSION__}')
 
     parser = argparse.ArgumentParser(
         description='A simple package that lists, downloads, and installs any valid BLFS package along with any dependencies.\n', 
