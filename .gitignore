@@ -131,7 +131,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
-
+snyk-pr/
 # Spyder project settings
 .spyderproject
 .spyproject
